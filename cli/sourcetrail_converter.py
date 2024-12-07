@@ -5,6 +5,7 @@ Module for converting SCIP data to Sourcetrail database format.
 from pathlib import Path
 from typing import Dict, Any, List, Optional
 from numbat import SourcetrailDB
+import os
 
 
 class ScipToSourcetrail:
@@ -191,6 +192,9 @@ class ScipToSourcetrail:
                 if "<get>" in name or "<set>" in name:
                     accessor = name[name.index("<"):name.index(">") + 1]
                     name = f"{base_name}{accessor}"
+                elif "<constructor>" in name:
+                    # For constructors, use the class name
+                    name = base_name
                 else:
                     name = base_name
 
@@ -224,265 +228,149 @@ class ScipToSourcetrail:
                     parent_id = private_class_map.get(simple_path)
                 if parent_id is None and generated_class_map is not None:
                     parent_id = generated_class_map.get(simple_path)
-                if parent_id is None:
-                    parent_id = self._resolve_parent(symbol_str, kind, name)
+
+                # If still no parent found, try to extract class name from constructor
+                if parent_id is None and "<constructor>" in symbol_str:
+                    class_path = symbol_str.split("#<constructor>")[0]
+                    class_name = class_path.split("/")[-1]
+                    if class_map is not None:
+                        parent_id = class_map.get(class_path)
+                    if parent_id is None and private_class_map is not None:
+                        parent_id = private_class_map.get(class_path)
+                    if parent_id is None and generated_class_map is not None:
+                        parent_id = generated_class_map.get(class_path)
 
             symbol_id = None
 
             # Map SCIP kinds to Sourcetrail records
-            if kind == "Constructor":
+            if kind == "Constructor" or "<constructor>" in symbol_str:
                 if parent_id:
                     symbol_id = self.db.record_method(name=name, parent_id=parent_id)
                 else:
-                    # Try to find the class this constructor belongs to
+                    # Try to find or create the parent class
                     class_path = symbol_str.split("#<constructor>")[0] if "#<constructor>" in symbol_str else symbol_str.split("#")[0]
-                    simple_path = class_path.split("#")[0]
-                    class_name = simple_path.split("/")[-1]
+                    class_name = class_path.split("/")[-1]
                     
-                    # Try to find in appropriate map based on name
+                    # Create the class if it doesn't exist
                     class_id = None
-                    if class_name.startswith("_$") or ".freezed." in simple_path:
-                        if generated_class_map:
-                            class_id = generated_class_map.get(simple_path)
-                            if not class_id and class_name.startswith("_$"):
-                                # Try without _$ prefix
-                                base_name = class_name[2:]
-                                base_path = "/".join(simple_path.split("/")[:-1] + [base_name])
-                                class_id = generated_class_map.get(base_path)
-                    elif class_name.startswith("_"):
-                        if private_class_map:
-                            class_id = private_class_map.get(simple_path)
-                            if not class_id:
-                                # Try without _ prefix
-                                base_name = class_name[1:]
-                                base_path = "/".join(simple_path.split("/")[:-1] + [base_name])
-                                class_id = private_class_map.get(base_path)
-                    elif class_map:
-                        class_id = class_map.get(simple_path)
+                    if class_map is not None:
+                        class_id = class_map.get(class_path)
+                    if class_id is None and private_class_map is not None:
+                        class_id = private_class_map.get(class_path)
+                    if class_id is None and generated_class_map is not None:
+                        class_id = generated_class_map.get(class_path)
+                    
+                    if class_id is None:
+                        # Create the class
+                        class_id = self.db.record_class(name=class_name)
+                        if class_map is not None:
+                            class_map[class_path] = class_id
                     
                     if class_id:
                         symbol_id = self.db.record_method(name=name, parent_id=class_id)
                     else:
                         self.missing_parent_symbols += 1
-            elif kind == "Class" or (not kind and name.endswith("Class")):
+
+            elif kind == "Class" or kind == "Interface" or (not kind and name.endswith("Class")):
                 symbol_id = self.db.record_class(name=name)
-                if is_test_related and test_namespace_id:
-                    self.db.record_ref_usage(symbol_id, test_namespace_id)
-            elif kind == "Interface":
-                symbol_id = self.db.record_interface(name=name)
                 if is_test_related and test_namespace_id:
                     self.db.record_ref_usage(symbol_id, test_namespace_id)
             elif kind == "Method" or kind == "Function" or (signature and signature.endswith("()")):
                 if parent_id:
                     symbol_id = self.db.record_method(name=name, parent_id=parent_id)
                 else:
-                    if is_test_related and test_namespace_id:
-                        symbol_id = self.db.record_method(name=name, parent_id=test_namespace_id)
-                    else:
-                        self.missing_parent_symbols += 1
-                        symbol_id = self.db.record_function(name=name)
-            elif kind == "Parameter":
-                # For constructor parameters, try to find the constructor's class
-                parent_path = "/".join(symbol_str.split("/")[:-1])  # Get parent path
-                if "#<constructor>" in parent_path:
-                    class_path = parent_path.split("#<constructor>")[0]
-                    class_id = self._find_class_by_path(class_path)
-                    if class_id:
-                        parent_id = class_id
-
+                    # For top-level functions
+                    symbol_id = self.db.record_function(name=name)
+            elif kind == "TypeParameter":
+                # Handle type parameters (generics)
                 if parent_id:
-                    # Record parameter as a field of its parent
+                    symbol_id = self.db.record_type_parameter_node(name=name, parent_id=parent_id)
+                else:
+                    # Try to find parent from the symbol path
+                    type_param_parts = symbol_str.split("#")
+                    if len(type_param_parts) > 1:
+                        parent_path = type_param_parts[0]
+                        # Look for parent in all maps
+                        parent_id = None
+                        if class_map:
+                            parent_id = class_map.get(parent_path)
+                        if parent_id is None and private_class_map:
+                            parent_id = private_class_map.get(parent_path)
+                        if parent_id is None and generated_class_map:
+                            parent_id = generated_class_map.get(parent_path)
+                        
+                        if parent_id:
+                            symbol_id = self.db.record_type_parameter_node(name=name, parent_id=parent_id)
+                        else:
+                            # Create a type alias for the generic type
+                            symbol_id = self.db.record_typedef_node(name=name)
+                    else:
+                        # Standalone type parameter
+                        symbol_id = self.db.record_typedef_node(name=name)
+            elif kind == "Variable" or kind == "Field" or kind == "Property":
+                if parent_id:
+                    # For class members
                     symbol_id = self.db.record_field(name=name, parent_id=parent_id)
-                    # Also record it as a local symbol to properly track scope
-                    local_symbol_id = self.db.record_local_symbol()
-                    if local_symbol_id:
-                        self.db.record_local_symbol_location(local_symbol_id, parent_id)
                 else:
-                    # Try to find the method/constructor this parameter belongs to
-                    method_path = parent_path.split("(")[0] if "(" in parent_path else parent_path
-                    method_id = self.symbol_id_map.get(method_path)
-                    if method_id:
-                        symbol_id = self.db.record_field(name=name, parent_id=method_id)
-                        local_symbol_id = self.db.record_local_symbol()
-                        if local_symbol_id:
-                            self.db.record_local_symbol_location(local_symbol_id, method_id)
-                    elif is_test_related and test_namespace_id:
-                        symbol_id = self.db.record_field(name=name, parent_id=test_namespace_id)
+                    # For top-level variables, try to find or create a namespace
+                    file_path = None
+                    for doc in symbol.get("documents", []):
+                        if doc.get("relative_path"):
+                            file_path = doc["relative_path"]
+                            break
+                    
+                    if file_path:
+                        # Create a namespace based on the file path
+                        namespace_path = os.path.dirname(file_path).replace("/", ".")
+                        if namespace_path:
+                            namespace_id = self.symbol_id_map.get(namespace_path)
+                            if not namespace_id:
+                                namespace_id = self.db.record_namespace(name=namespace_path)
+                                self.symbol_id_map[namespace_path] = namespace_id
+                            symbol_id = self.db.record_field(name=name, parent_id=namespace_id)
+                        else:
+                            # Global variable
+                            symbol_id = self.db.record_global_variable(name=name)
                     else:
-                        self.missing_parent_symbols += 1
-            elif kind == "Field" or kind == "Property":
-                # Handle getters and setters
-                is_accessor = "<get>" in name or "<set>" in name
-                if is_accessor:
-                    base_name = name[:name.index("<")]
-                else:
-                    base_name = name
-
-                if parent_id:
-                    symbol_id = self.db.record_field(name=base_name, parent_id=parent_id)
-                    if is_accessor:
-                        # Record accessor as a method
-                        accessor_id = self.db.record_method(name=name, parent_id=parent_id)
-                        if accessor_id:
-                            # Link accessor to field
-                            self.db.record_ref_usage(accessor_id, symbol_id)
-                else:
-                    if is_test_related and test_namespace_id:
-                        symbol_id = self.db.record_field(name=base_name, parent_id=test_namespace_id)
-                    else:
-                        self.missing_parent_symbols += 1
-                        symbol_id = self.db.record_global_variable(name=base_name)
+                        # Global variable
+                        symbol_id = self.db.record_global_variable(name=name)
             elif kind == "Enum":
-                # Create namespace for enum
-                enum_namespace_id = self.db.record_namespace(name=name)
-                if enum_namespace_id:
-                    # Record the enum itself
-                    symbol_id = self.db.record_enum(name=name)
-                    if symbol_id:
-                        # Link enum to its namespace
-                        self.db.record_ref_usage(symbol_id, enum_namespace_id)
-                        if is_test_related and test_namespace_id:
-                            self.db.record_ref_usage(symbol_id, test_namespace_id)
+                symbol_id = self.db.record_enum(name=name)
             elif kind == "EnumConstant":
                 if parent_id:
                     symbol_id = self.db.record_enum_constant(name=name, parent_id=parent_id)
                 else:
-                    # Try to find enum by name
-                    parent_path = "/".join(symbol_str.split("/")[:-1])
-                    enum_name = parent_path.split("/")[-1].split("#")[0]
-                    enum_id = self._find_enum_by_name(enum_name)
-                    if enum_id:
-                        symbol_id = self.db.record_enum_constant(name=name, parent_id=enum_id)
-                    elif is_test_related and test_namespace_id:
-                        symbol_id = self.db.record_enum_constant(name=name, parent_id=test_namespace_id)
-                    else:
-                        self.missing_parent_symbols += 1
+                    self.missing_parent_symbols += 1
+            elif kind in ["Module", "Package", "Namespace"]:
+                symbol_id = self.db.record_namespace(name=name)
             elif kind == "TypeAlias" or kind == "TypeDef":
                 symbol_id = self.db.record_typedef_node(name=name)
-                if is_test_related and test_namespace_id:
-                    self.db.record_ref_usage(symbol_id, test_namespace_id)
-            elif kind == "Package" or kind == "Module":
-                symbol_id = self.db.record_module(name=name)
-            elif kind == "Namespace":
-                symbol_id = self.db.record_namespace(name=name)
+            else:
+                # For unknown kinds, try to infer from the name and context
+                if name.endswith("Type") or name.startswith("Type"):
+                    symbol_id = self.db.record_typedef_node(name=name)
+                elif name.endswith("Enum"):
+                    symbol_id = self.db.record_enum(name=name)
+                elif name.endswith("Const"):
+                    symbol_id = self.db.record_global_variable(name=name)
+                elif parent_id:
+                    # If we have a parent, assume it's a member
+                    symbol_id = self.db.record_field(name=name, parent_id=parent_id)
+                else:
+                    # Default to global variable
+                    symbol_id = self.db.record_global_variable(name=name)
 
             if symbol_id:
                 self.symbol_id_map[symbol_str] = symbol_id
-                return symbol_id
             else:
-                # Only track unregistered non-test symbols
-                if not is_test_related and not symbol_str.startswith("local "):
-                    self.unregistered_symbols.append(f"{kind} {name} ({symbol_str})")
-                return None
+                self.unregistered_symbols.append(f"{kind} {name} ({symbol_str})")
+
+            return symbol_id
 
         except Exception as e:
-            # Only track errors for non-test symbols
-            if not any(x in symbol_str for x in ["test", "mock", "fake"]):
-                self.unregistered_symbols.append(f"{kind} {name} - Error: {str(e)}")
+            print(f"Error recording symbol {symbol_str}: {str(e)}")
+            self.unregistered_symbols.append(f"{kind} {name} ({symbol_str})")
             return None
-
-    def _resolve_parent(self, symbol_str: str, kind: str, name: str) -> Optional[int]:
-        """Resolve parent ID using various strategies."""
-        # Get parent path
-        parent_symbol = "/".join(symbol_str.split("/")[:-1])
-
-        # Direct lookup
-        parent_id = self.symbol_id_map.get(parent_symbol)
-        if parent_id:
-            return parent_id
-
-        # For constructors and their parameters, try to find the class
-        if kind in ["Constructor", "Parameter"] and "#<constructor>" in parent_symbol:
-            class_path = parent_symbol.split("#<constructor>")[0]
-            class_id = self._find_class_by_path(class_path)
-            if class_id:
-                return class_id
-
-        # Try to find enclosing class/interface
-        if "/" in parent_symbol:
-            enclosing_class = parent_symbol.split("/")[:-1]
-            while enclosing_class:
-                potential_parent = "/".join(enclosing_class)
-                parent_id = self.symbol_id_map.get(potential_parent)
-                if parent_id:
-                    return parent_id
-                enclosing_class.pop()
-
-        # For parameters, try to find the method they belong to
-        if kind == "Parameter" and "(" in parent_symbol:
-            method_path = parent_symbol.split("(")[0]
-            method_id = self.symbol_id_map.get(method_path)
-            if method_id:
-                return method_id
-
-        # For type parameters, try to find the generic class/interface
-        if kind == "TypeParameter":
-            # Try to find by path first
-            type_owner_path = "/".join(symbol_str.split("/")[:-1])
-            if "#" in type_owner_path:
-                type_owner_path = type_owner_path.split("#")[0]
-            owner_id = self.symbol_id_map.get(type_owner_path)
-            if owner_id:
-                return owner_id
-
-            # If not found, try to find by name
-            if "/" in symbol_str:
-                type_owner_name = symbol_str.split("/")[-2]
-                if "#" in type_owner_name:
-                    type_owner_name = type_owner_name.split("#")[0]
-                # Look through all symbols for matching class/interface
-                for path, id in self.symbol_id_map.items():
-                    if path.endswith(f"/{type_owner_name}") or path.endswith(f"/{type_owner_name}#"):
-                        return id
-
-        return None
-
-    def _find_class_by_path(self, class_path: str) -> Optional[int]:
-        """Find a class ID by its path."""
-        # Direct lookup
-        class_id = self.symbol_id_map.get(class_path)
-        if class_id:
-            return class_id
-
-        # Try without any suffixes
-        base_path = class_path.split("#")[0]
-        return self.symbol_id_map.get(base_path)
-
-    def _find_class_by_name(self, class_name: str) -> Optional[int]:
-        """Find a class ID by its name."""
-        # Remove any Dart-specific suffixes
-        if "#" in class_name:
-            class_name = class_name.split("#")[0]
-        if class_name.endswith("."):
-            class_name = class_name[:-1]
-        if class_name.startswith("`") and class_name.endswith("`"):
-            class_name = class_name[1:-1]
-
-        # Look through all symbols for matching class name
-        for symbol_path, symbol_id in self.symbol_id_map.items():
-            path_parts = symbol_path.split("/")
-            if path_parts and class_name in path_parts[-1]:
-                return symbol_id
-
-        return None
-
-    def _find_enum_by_name(self, enum_name: str) -> Optional[int]:
-        """Find an enum ID by its name."""
-        # Remove any Dart-specific suffixes
-        if "#" in enum_name:
-            enum_name = enum_name.split("#")[0]
-        if enum_name.endswith("."):
-            enum_name = enum_name[:-1]
-        if enum_name.startswith("`") and enum_name.endswith("`"):
-            enum_name = enum_name[1:-1]
-
-        # Look through all symbols for matching enum name
-        for symbol_path, symbol_id in self.symbol_id_map.items():
-            path_parts = symbol_path.split("/")
-            if path_parts and enum_name in path_parts[-1]:
-                return symbol_id
-
-        return None
 
     def _record_relationships(self, occurrences: List[Dict[str, Any]]) -> None:
         """Record relationships between symbols."""
