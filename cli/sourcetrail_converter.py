@@ -299,14 +299,8 @@ class ScipToSourcetrail:
                                     range_data["end_col"]
                                 )
                     
-                    # Record method call relationships
-                    refs = self._get_safe(symbol, "references", [])
-                    if isinstance(refs, list):
-                        for ref in refs:
-                            if isinstance(ref, dict) and ref.get("type") == "call":
-                                target_id = self.symbol_id_map.get(ref.get("target"))
-                                if target_id:
-                                    self.db.record_ref_call(symbol_id, target_id)
+                    # Record method call relationships with enhanced tracking
+                    self._record_call_relationships(symbol_id, symbol, self._get_safe(symbol, "occurrences", []))
                 
                 return symbol_id
                 
@@ -334,6 +328,91 @@ class ScipToSourcetrail:
                         return self.db.record_function(name=name)
                 else:
                     return self.db.record_function(name=name)
+
+    def _record_call_relationships(self, symbol_id: int, symbol: Dict[str, Any], occurrences: List[Dict[str, Any]]) -> None:
+        """Record all types of call relationships for a symbol.
+        
+        Args:
+            symbol_id: Sourcetrail ID of the calling symbol
+            symbol: SCIP symbol data
+            occurrences: List of symbol occurrences
+        """
+        # Get symbol signature to determine if it's async
+        signature = self._get_signature(symbol)
+        is_async = "async" in signature if signature else False
+        
+        # Process direct method calls from occurrences
+        for occurrence in occurrences:
+            if not isinstance(occurrence, dict):
+                continue
+                
+            # Check if this is a call occurrence
+            symbol_roles = occurrence.get("symbol_roles", 0)
+            if symbol_roles & 0x04:  # Call role bit
+                target_symbol = occurrence.get("symbol", "")
+                target_id = self.symbol_id_map.get(target_symbol)
+                
+                if target_id:
+                    # Record basic call relationship
+                    self.db.record_ref_call(symbol_id, target_id)
+                    
+                    # If this is an async call, record additional async relationship
+                    if is_async:
+                        self.db.record_ref_usage(symbol_id, target_id)  # Mark async dependency
+                        
+                    # Check if this is a callback registration
+                    if self._is_callback_registration(occurrence):
+                        self.db.record_ref_usage(target_id, symbol_id)  # Callback can use the caller
+        
+        # Process indirect calls (e.g., through function pointers or callbacks)
+        self._record_indirect_calls(symbol_id, symbol)
+        
+    def _is_callback_registration(self, occurrence: Dict[str, Any]) -> bool:
+        """Determine if an occurrence represents callback registration."""
+        # Common callback registration patterns in Dart
+        callback_patterns = [
+            "addListener",
+            "listen",
+            "forEach",
+            "map",
+            "where",
+            "then",
+            "catchError",
+            "onError",
+            "whenComplete"
+        ]
+        
+        symbol = occurrence.get("symbol", "")
+        return any(pattern in symbol for pattern in callback_patterns)
+        
+    def _record_indirect_calls(self, symbol_id: int, symbol: Dict[str, Any]) -> None:
+        """Record indirect call relationships (function pointers, callbacks)."""
+        # Get relationships that might indicate indirect calls
+        relationships = symbol.get("relationships", [])
+        
+        for rel in relationships:
+            if not isinstance(rel, dict):
+                continue
+                
+            target_symbol = rel.get("symbol", "")
+            target_id = self.symbol_id_map.get(target_symbol)
+            
+            if not target_id:
+                continue
+                
+            # Check relationship type
+            is_reference = rel.get("is_reference", False)
+            is_implementation = rel.get("is_implementation", False)
+            
+            if is_reference:
+                # Function reference - could be used as callback
+                self.db.record_ref_usage(symbol_id, target_id)
+                
+            if is_implementation:
+                # Interface/abstract method implementation
+                self.db.record_ref_implementation(symbol_id, target_id)
+                # The implementation might be called through the interface
+                self.db.record_ref_call(target_id, symbol_id)
 
     def _record_symbols(self, symbols: List[Dict[str, Any]]) -> None:
         """Record symbols in Sourcetrail DB."""

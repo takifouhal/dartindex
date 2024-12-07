@@ -18,7 +18,7 @@ class SCIPProcessor:
         
         Args:
             scip_data: Raw SCIP binary data
-            format_type: Output format (json, text, or summary)
+            format_type: Output format (json, text, summary, or sourcetrail)
             symbols_only: Whether to only show symbol information
             
         Returns:
@@ -34,9 +34,13 @@ class SCIPProcessor:
         format_handlers = {
             "json": self._format_json,
             "text": lambda idx: text_format.MessageToString(idx, as_utf8=True),
-            "summary": self._format_summary
+            "summary": self._format_summary,
+            "sourcetrail": self._format_json  # Use JSON format for sourcetrail conversion
         }
         
+        if format_type not in format_handlers:
+            raise ValueError(f"Unsupported format type: {format_type}")
+            
         return format_handlers[format_type](index)
 
     def _format_symbols(self, index: scip_pb2.Index, format_type: str) -> str:
