@@ -245,7 +245,7 @@ class ScipToSourcetrail:
             elif kind == "TypeParameter":
                 # For type parameters, attach them to their enclosing type
                 if parent_id:
-                    symbol_id = self.db.record_type_parameter(name=name, parent_id=parent_id)
+                    symbol_id = self.db.record_type_parameter_node(name=name, parent_id=parent_id)
                 else:
                     # Try to find the enclosing type by looking at the path
                     enclosing_type = symbol_str.split("/")[-2] if len(symbol_str.split("/")) > 1 else None
@@ -253,26 +253,34 @@ class ScipToSourcetrail:
                         for potential_parent, parent_symbol_id in self.symbol_id_map.items():
                             if enclosing_type in potential_parent:
                                 parent_id = parent_symbol_id
-                                symbol_id = self.db.record_type_parameter(name=name, parent_id=parent_id)
+                                symbol_id = self.db.record_type_parameter_node(name=name, parent_id=parent_id)
                                 break
                     if not symbol_id:
                         if is_test_related and test_namespace_id:
-                            symbol_id = self.db.record_type_parameter(name=name, parent_id=test_namespace_id)
+                            symbol_id = self.db.record_type_parameter_node(name=name, parent_id=test_namespace_id)
                         else:
                             self.missing_parent_symbols += 1
             elif kind == "TypeAlias" or kind == "TypeDef":
-                symbol_id = self.db.record_typedef(name=name)
+                symbol_id = self.db.record_typedef_node(name=name)
                 if is_test_related and test_namespace_id:
                     self.db.record_ref_usage(symbol_id, test_namespace_id)
-            elif kind == "Package" or kind == "Module" or kind == "Namespace":
+            elif kind == "Package" or kind == "Module":
+                symbol_id = self.db.record_module(name=name)
+            elif kind == "Namespace":
                 symbol_id = self.db.record_namespace(name=name)
+
+            # Skip recording local symbols
+            if symbol_str.startswith("local "):
+                if not any(x in symbol_str for x in ["test", "mock", "fake"]):
+                    self.skipped_local_symbols += 1
+                return None
 
             if symbol_id:
                 self.symbol_id_map[symbol_str] = symbol_id
                 return symbol_id
             else:
                 # Only track unregistered non-test symbols
-                if not is_test_related:
+                if not is_test_related and not symbol_str.startswith("local "):
                     self.unregistered_symbols.append(f"{kind} {name} ({symbol_str})")
                 return None
 
