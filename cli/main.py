@@ -5,6 +5,7 @@ import sys
 import json
 import click
 from google.protobuf import text_format
+from google.protobuf.json_format import MessageToDict
 
 # Add the current directory to the Python path
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -143,27 +144,15 @@ def _display_symbols(index, format, filter_language):
                     print(f"  {doc}")
 
 def _display_json(index):
-    """Convert the index to JSON format"""
-    data = {
-        'metadata': {
-            'project_root': index.metadata.project_root,
-            'tool': {
-                'name': index.metadata.tool_info.name,
-                'version': index.metadata.tool_info.version,
-                'arguments': list(index.metadata.tool_info.arguments)
-            }
-        },
-        'documents': []
-    }
-    
-    for doc in index.documents:
-        doc_data = {
-            'path': doc.relative_path,
-            'language': doc.language,
-            'symbols': len(doc.symbols),
-            'occurrences': len(doc.occurrences)
-        }
-        data['documents'].append(doc_data)
+    """Convert the index to JSON format with all nested fields"""
+    # Convert protobuf message to dict using the official protobuf JSON formatter
+    data = MessageToDict(
+        index,
+        preserving_proto_field_name=True,
+        use_integers_for_enums=False,
+        descriptor_pool=None,
+        float_precision=None
+    )
     
     print(json.dumps(data, indent=2))
 
