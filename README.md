@@ -10,6 +10,8 @@ A command-line tool for indexing Dart projects using SCIP (Source Code Intellige
 - Single binary installation
 - Support for Flutter Version Management (FVM)
 - Automatic SDK detection and configuration
+- Type-safe implementation
+- Comprehensive error handling
 
 ## Prerequisites
 
@@ -62,6 +64,13 @@ dartindex index /path/to/dart/project --format summary
 dartindex index /path/to/dart/project --symbols-only
 ```
 
+### Output Formats
+
+The tool supports multiple output formats:
+- `json`: Full SCIP index data in JSON format (default)
+- `summary`: High-level overview of the indexed project
+- `text`: Full protobuf text format
+
 ### FVM Support
 
 The tool automatically detects and uses FVM when available:
@@ -105,16 +114,17 @@ The build process consists of several steps:
 ```
 dartindex/
 ├── cli/
-│   ├── tools/
+│   ├── tools/          # Built native tools (not in version control)
 │   │   ├── dart/       # Built scip-dart binary
 │   │   └── go/         # Built scip binary
 │   ├── __init__.py
 │   ├── main.py         # CLI entry point
 │   ├── dart_indexer.py # Dart indexing logic
 │   └── scip_processor.py # SCIP processing logic
-├── setup.py
-├── requirements.txt
-└── Makefile
+├── setup.py            # Package configuration
+├── requirements.txt    # Python dependencies
+├── build_tools.py      # Tool build script
+└── Makefile           # Build automation
 ```
 
 ### Make Commands
@@ -134,6 +144,21 @@ The tool is designed to work with various Dart/Flutter development environments:
 - FVM-managed Flutter/Dart versions
 - Project-specific FVM configurations
 - Multiple Flutter versions on the same system
+
+### Code Organization
+
+The codebase is organized into several key components:
+
+- `cli/main.py`: Command-line interface using Click
+- `cli/dart_indexer.py`: Core indexing functionality
+- `cli/scip_processor.py`: SCIP data processing and formatting
+- `build_tools.py`: Native tool build automation
+
+Key features of the implementation:
+- Type hints throughout the codebase
+- Comprehensive error handling
+- Clear separation of concerns
+- Modular and testable design
 
 ## License
 
