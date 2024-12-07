@@ -379,7 +379,7 @@ class ScipToSourcetrail:
                 symbol = occurrence.get("symbol", "")
                 if not symbol or symbol.startswith("local "):
                     continue  # Skip local variable targets
-                    
+                
                 symbol_id = self.symbol_id_map.get(symbol)
                 if not symbol_id:
                     continue
@@ -420,25 +420,71 @@ class ScipToSourcetrail:
                 target_id = self.symbol_id_map.get(target)
                 if not target_id:
                     continue
-                    
+
+                # Extract relationship context
+                is_mixin = "with" in occurrence.get("syntax", "").lower()
+                is_interface = "implements" in occurrence.get("syntax", "").lower()
+                is_superclass = "extends" in occurrence.get("syntax", "").lower()
+                
                 # Map SCIP symbol roles to Sourcetrail relationships
                 try:
+                    # Basic references and definitions
                     if symbol_roles & 0x2:  # Definition
                         self.db.record_ref_usage(symbol_id, target_id)
                     if symbol_roles & 0x4:  # Reference
                         self.db.record_ref_usage(symbol_id, target_id)
+                        
+                    # Variable access
                     if symbol_roles & 0x8:  # Read
                         self.db.record_ref_usage(symbol_id, target_id)
                     if symbol_roles & 0x10:  # Write
                         self.db.record_ref_usage(symbol_id, target_id)
+                        
+                    # Method calls and implementations
                     if symbol_roles & 0x20:  # Call
                         self.db.record_ref_call(symbol_id, target_id)
                     if symbol_roles & 0x40:  # Implementation
-                        self.db.record_ref_inheritance(symbol_id, target_id)
+                        if is_interface:
+                            # Interface implementation
+                            self.db.record_ref_implementation(symbol_id, target_id)
+                        elif is_mixin:
+                            # Mixin usage
+                            self.db.record_ref_usage(symbol_id, target_id)
+                            self.db.record_ref_implementation(symbol_id, target_id)
+                        else:
+                            # Regular implementation
+                            self.db.record_ref_inheritance(symbol_id, target_id)
+                            
+                    # Inheritance and overrides
                     if symbol_roles & 0x80:  # Override
-                        self.db.record_ref_override(symbol_id, target_id)
+                        if is_superclass:
+                            # Superclass method override
+                            self.db.record_ref_override(symbol_id, target_id)
+                            self.db.record_ref_inheritance(symbol_id, target_id)
+                        else:
+                            # Interface or mixin method override
+                            self.db.record_ref_override(symbol_id, target_id)
+                            
+                    # Type relationships
                     if symbol_roles & 0x100:  # TypeDefinition
+                        if is_interface:
+                            # Interface usage
+                            self.db.record_ref_implementation(symbol_id, target_id)
+                        elif is_mixin:
+                            # Mixin usage
+                            self.db.record_ref_usage(symbol_id, target_id)
+                        else:
+                            # Regular type usage
+                            self.db.record_ref_type_usage(symbol_id, target_id)
+                            
+                    # Additional Dart-specific relationships
+                    if symbol_roles & 0x200:  # Type parameter (generic)
                         self.db.record_ref_type_usage(symbol_id, target_id)
+                    if symbol_roles & 0x400:  # Type argument
+                        self.db.record_ref_type_usage(symbol_id, target_id)
+                    if symbol_roles & 0x800:  # Type bound
+                        self.db.record_ref_type_usage(symbol_id, target_id)
+                        
                 except Exception as e:
                     self.failed_relationships.append(f"{symbol} -> {target} (roles: {symbol_roles}) - Error: {str(e)}")
             except Exception as e:
