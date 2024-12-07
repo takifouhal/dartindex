@@ -37,6 +37,20 @@ class ScipToSourcetrail:
             "functions": 0,
             "variables": 0,
         }
+        # Add call graph statistics
+        self.call_stats = {
+            "direct_calls": 0,
+            "async_calls": 0,
+            "callback_registrations": 0,
+            "indirect_calls": 0,
+            "interface_calls": 0,
+            "total_calls": 0,
+            "calls_by_file": {},
+            "most_called_methods": {},
+            "most_calling_methods": {},
+            "async_methods": set(),
+            "callback_methods": set(),
+        }
         
     def convert(self, scip_json: Dict[str, Any]) -> None:
         """Convert SCIP JSON data to Sourcetrail DB format.
@@ -101,9 +115,31 @@ class ScipToSourcetrail:
             print(f"Typedefs: {self.stats['typedefs']}")
             print(f"Functions: {self.stats['functions']}")
             print(f"Variables: {self.stats['variables']}")
-            print(f"Skipped local symbols: {self.skipped_local_symbols}")
-            if self.missing_parent_symbols > 0:
-                print(f"Warning: {self.missing_parent_symbols} symbols had missing parents")
+
+            print("\nCall Graph Summary:")
+            print(f"Total Call Relationships: {self.call_stats['total_calls']}")
+            print(f"- Direct Method Calls: {self.call_stats['direct_calls']}")
+            print(f"- Async Method Calls: {self.call_stats['async_calls']}")
+            print(f"- Callback Registrations: {self.call_stats['callback_registrations']}")
+            print(f"- Indirect Calls: {self.call_stats['indirect_calls']}")
+            print(f"- Interface/Implementation Calls: {self.call_stats['interface_calls']}")
+            print(f"\nAsync Methods: {len(self.call_stats['async_methods'])}")
+            print(f"Methods with Callbacks: {len(self.call_stats['callback_methods'])}")
+            
+            # Show top 5 most called methods
+            print("\nTop 5 Most Called Methods:")
+            for method, count in sorted(self.call_stats['most_called_methods'].items(), key=lambda x: x[1], reverse=True)[:5]:
+                print(f"- {method}: {count} calls")
+                
+            # Show top 5 most calling methods
+            print("\nTop 5 Most Active Callers:")
+            for method, count in sorted(self.call_stats['most_calling_methods'].items(), key=lambda x: x[1], reverse=True)[:5]:
+                print(f"- {method}: {count} outgoing calls")
+                
+            # Show files with most calls
+            print("\nTop 5 Files with Most Calls:")
+            for file, count in sorted(self.call_stats['calls_by_file'].items(), key=lambda x: x[1], reverse=True)[:5]:
+                print(f"- {file}: {count} calls")
             
         except Exception as e:
             print(f"\nDEBUG: Error details: {str(e)}")
@@ -341,6 +377,13 @@ class ScipToSourcetrail:
         signature = self._get_signature(symbol)
         is_async = "async" in signature if signature else False
         
+        if is_async:
+            self.call_stats["async_methods"].add(symbol_id)
+        
+        # Get caller info for stats
+        caller_name = self._get_safe(symbol, "display_name", "unknown")
+        file_path = self._get_safe(symbol, "document_path", "unknown")
+        
         # Process direct method calls from occurrences
         for occurrence in occurrences:
             if not isinstance(occurrence, dict):
@@ -355,18 +398,33 @@ class ScipToSourcetrail:
                 if target_id:
                     # Record basic call relationship
                     self.db.record_ref_call(symbol_id, target_id)
+                    self.call_stats["direct_calls"] += 1
+                    self.call_stats["total_calls"] += 1
+                    
+                    # Update calls by file
+                    self.call_stats["calls_by_file"][file_path] = self.call_stats["calls_by_file"].get(file_path, 0) + 1
+                    
+                    # Update most called methods
+                    target_name = occurrence.get("display_name", target_symbol)
+                    self.call_stats["most_called_methods"][target_name] = self.call_stats["most_called_methods"].get(target_name, 0) + 1
+                    
+                    # Update most calling methods
+                    self.call_stats["most_calling_methods"][caller_name] = self.call_stats["most_calling_methods"].get(caller_name, 0) + 1
                     
                     # If this is an async call, record additional async relationship
                     if is_async:
                         self.db.record_ref_usage(symbol_id, target_id)  # Mark async dependency
+                        self.call_stats["async_calls"] += 1
                         
                     # Check if this is a callback registration
                     if self._is_callback_registration(occurrence):
                         self.db.record_ref_usage(target_id, symbol_id)  # Callback can use the caller
+                        self.call_stats["callback_registrations"] += 1
+                        self.call_stats["callback_methods"].add(target_id)
         
         # Process indirect calls (e.g., through function pointers or callbacks)
         self._record_indirect_calls(symbol_id, symbol)
-        
+
     def _is_callback_registration(self, occurrence: Dict[str, Any]) -> bool:
         """Determine if an occurrence represents callback registration."""
         # Common callback registration patterns in Dart
@@ -407,12 +465,16 @@ class ScipToSourcetrail:
             if is_reference:
                 # Function reference - could be used as callback
                 self.db.record_ref_usage(symbol_id, target_id)
+                self.call_stats["indirect_calls"] += 1
+                self.call_stats["total_calls"] += 1
                 
             if is_implementation:
                 # Interface/abstract method implementation
                 self.db.record_ref_implementation(symbol_id, target_id)
                 # The implementation might be called through the interface
                 self.db.record_ref_call(target_id, symbol_id)
+                self.call_stats["interface_calls"] += 1
+                self.call_stats["total_calls"] += 1
 
     def _record_symbols(self, symbols: List[Dict[str, Any]]) -> None:
         """Record symbols in Sourcetrail DB."""
