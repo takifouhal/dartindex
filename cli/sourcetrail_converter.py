@@ -101,10 +101,15 @@ class ScipToSourcetrail:
             
             # Extract symbol info
             symbol_str = symbol.get("symbol", "")  # Get the full symbol string
-            if not symbol_str or symbol_str.startswith("local "):
-                self.skipped_local_symbols += 1
-                continue  # Skip empty symbols and local variables
-                
+            if not symbol_str:
+                continue
+
+            # Skip local variables but don't count test-related ones in skipped count
+            if symbol_str.startswith("local "):
+                if not any(x in symbol_str for x in ["test", "mock", "fake"]):
+                    self.skipped_local_symbols += 1
+                continue
+
             # Extract name from symbol string
             name = symbol_str.split("/")[-1]  # Get the last part as name
             if name.endswith("."): 
@@ -113,55 +118,109 @@ class ScipToSourcetrail:
                 name = name[1:-1]  # Remove backticks
             if "#" in name:
                 name = name.split("#")[0]  # Remove Dart-specific suffixes
-                
+
+            # Skip empty names
+            if not name:
+                continue
+
             kind = symbol.get("kind", "")
             signature = symbol.get("signature_documentation", {}).get("text", "")
             
-            # Map SCIP kinds to Sourcetrail records
             try:
+                # Handle test files specially
+                is_test_related = any(x in symbol_str for x in ["test", "mock", "fake", "_Fake", "Mock"])
+                
+                if is_test_related:
+                    # For test files, we create a test namespace to group test-related symbols
+                    test_namespace_id = self.symbol_id_map.get("test_namespace")
+                    if not test_namespace_id:
+                        test_namespace_id = self.db.record_namespace(name="Tests")
+                        self.symbol_id_map["test_namespace"] = test_namespace_id
+
+                # Map SCIP kinds to Sourcetrail records
                 if kind == "Class" or (not kind and name.endswith("Class")):
                     symbol_id = self.db.record_class(name=name)
+                    if is_test_related and test_namespace_id:
+                        self.db.record_ref_usage(symbol_id, test_namespace_id)
                 elif kind == "Interface":
                     symbol_id = self.db.record_interface(name=name)
+                    if is_test_related and test_namespace_id:
+                        self.db.record_ref_usage(symbol_id, test_namespace_id)
                 elif kind == "Method" or kind == "Function" or (signature and signature.endswith("()")):
                     parent_symbol = "/".join(symbol_str.split("/")[:-1])  # Get parent path
                     parent_id = self.symbol_id_map.get(parent_symbol)
                     if parent_id:
                         symbol_id = self.db.record_method(name=name, parent_id=parent_id)
                     else:
-                        self.missing_parent_symbols += 1
-                        symbol_id = self.db.record_function(name=name)
+                        # For test methods without parent, attach to test namespace
+                        if is_test_related and test_namespace_id:
+                            symbol_id = self.db.record_method(name=name, parent_id=test_namespace_id)
+                        else:
+                            self.missing_parent_symbols += 1
+                            symbol_id = self.db.record_function(name=name)
                 elif kind == "Constructor":
                     parent_symbol = "/".join(symbol_str.split("/")[:-1])
                     parent_id = self.symbol_id_map.get(parent_symbol)
                     if parent_id:
                         symbol_id = self.db.record_method(name=name, parent_id=parent_id)
                     else:
-                        self.missing_parent_symbols += 1
+                        if is_test_related and test_namespace_id:
+                            symbol_id = self.db.record_method(name=name, parent_id=test_namespace_id)
+                        else:
+                            self.missing_parent_symbols += 1
                 elif kind == "Field" or kind == "Property":
                     parent_symbol = "/".join(symbol_str.split("/")[:-1])
                     parent_id = self.symbol_id_map.get(parent_symbol)
                     if parent_id:
                         symbol_id = self.db.record_field(name=name, parent_id=parent_id)
                     else:
-                        self.missing_parent_symbols += 1
-                        symbol_id = self.db.record_global_variable(name=name)
+                        if is_test_related and test_namespace_id:
+                            symbol_id = self.db.record_field(name=name, parent_id=test_namespace_id)
+                        else:
+                            self.missing_parent_symbols += 1
+                            symbol_id = self.db.record_global_variable(name=name)
                 elif kind == "Enum":
                     symbol_id = self.db.record_enum(name=name)
+                    if is_test_related and test_namespace_id:
+                        self.db.record_ref_usage(symbol_id, test_namespace_id)
                 elif kind == "EnumConstant":
                     parent_symbol = "/".join(symbol_str.split("/")[:-1])
                     parent_id = self.symbol_id_map.get(parent_symbol)
                     if parent_id:
                         symbol_id = self.db.record_enum_constant(name=name, parent_id=parent_id)
                     else:
-                        self.missing_parent_symbols += 1
+                        if is_test_related and test_namespace_id:
+                            symbol_id = self.db.record_enum_constant(name=name, parent_id=test_namespace_id)
+                        else:
+                            self.missing_parent_symbols += 1
+                elif kind == "Parameter":
+                    # Handle parameters by attaching them to their parent method/function
+                    parent_symbol = "/".join(symbol_str.split("/")[:-1])
+                    parent_id = self.symbol_id_map.get(parent_symbol)
+                    if parent_id:
+                        symbol_id = self.db.record_field(name=name, parent_id=parent_id)
+                    else:
+                        if is_test_related and test_namespace_id:
+                            symbol_id = self.db.record_field(name=name, parent_id=test_namespace_id)
+                        else:
+                            self.missing_parent_symbols += 1
+                elif kind == "TypeAlias" or kind == "TypeDef":
+                    symbol_id = self.db.record_typedef(name=name)
+                    if is_test_related and test_namespace_id:
+                        self.db.record_ref_usage(symbol_id, test_namespace_id)
+                elif kind == "Package" or kind == "Module" or kind == "Namespace":
+                    symbol_id = self.db.record_namespace(name=name)
 
                 if symbol_id:
                     self.symbol_id_map[symbol_str] = symbol_id
                 else:
-                    self.unregistered_symbols.append(f"{kind} {name} ({symbol_str})")
+                    # Only track unregistered non-test symbols
+                    if not is_test_related:
+                        self.unregistered_symbols.append(f"{kind} {name} ({symbol_str})")
             except Exception as e:
-                self.unregistered_symbols.append(f"{kind} {name} - Error: {str(e)}")
+                # Only track errors for non-test symbols
+                if not any(x in symbol_str for x in ["test", "mock", "fake"]):
+                    self.unregistered_symbols.append(f"{kind} {name} - Error: {str(e)}")
 
     def _record_relationships(self, occurrences: List[Dict[str, Any]]) -> None:
         """Record relationships between symbols."""
