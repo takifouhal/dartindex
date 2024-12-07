@@ -39,6 +39,7 @@ build/
 
 # Project specific
 /usr/local/bin/dartindex
+cli/tools/
 
 # Development
 *.log
