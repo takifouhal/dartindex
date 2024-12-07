@@ -96,44 +96,77 @@ class ScipToSourcetrail:
 
     def _record_symbols(self, symbols: List[Dict[str, Any]]) -> None:
         """Record symbols in Sourcetrail DB."""
-        # First pass: record all non-dependent symbols and build type parameter map
-        type_param_map = {}  # Map to store type parameters and their owners
+        # First pass: record all classes and build maps
+        class_map = {}  # Map class paths to their IDs
+        private_class_map = {}  # Map for private classes
+        generated_class_map = {}  # Map for generated classes (freezed, etc.)
+        
+        # First pass: record classes and build maps
         for symbol in symbols:
             symbol_str = symbol.get("symbol", "")
             if not symbol_str:
                 continue
 
             kind = symbol.get("kind", "")
-            # First pass: handle non-dependent symbols and collect type parameter info
-            if kind in ["Class", "Interface", "Enum", "Package", "Module", "Namespace", "TypeAlias", "TypeDef"]:
+            if kind == "Class" or kind == "Interface":
+                # Record the class/interface
                 symbol_id = self._record_symbol(symbol)
-                if symbol_id and kind in ["Class", "Interface"]:
-                    # Check if this class/interface has type parameters
-                    class_path = symbol_str.split("#")[0] if "#" in symbol_str else symbol_str
-                    for s in symbols:
-                        if s.get("kind") == "TypeParameter" and s.get("symbol", "").startswith(class_path):
-                            type_param_map[s.get("symbol")] = symbol_id
+                if symbol_id:
+                    # Store both full path and simple path
+                    full_path = symbol_str
+                    simple_path = symbol_str.split("#")[0] if "#" in symbol_str else symbol_str
+                    class_name = simple_path.split("/")[-1]
+                    
+                    # Store in appropriate map
+                    if class_name.startswith("_$") or ".freezed." in simple_path:
+                        # Generated class
+                        generated_class_map[full_path] = symbol_id
+                        generated_class_map[simple_path] = symbol_id
+                        # Also store without _$ prefix
+                        if class_name.startswith("_$"):
+                            base_name = class_name[2:]
+                            base_path = "/".join(simple_path.split("/")[:-1] + [base_name])
+                            generated_class_map[base_path] = symbol_id
+                    elif class_name.startswith("_"):
+                        # Private class
+                        private_class_map[full_path] = symbol_id
+                        private_class_map[simple_path] = symbol_id
+                        # Also store without _ prefix
+                        base_name = class_name[1:]
+                        base_path = "/".join(simple_path.split("/")[:-1] + [base_name])
+                        private_class_map[base_path] = symbol_id
+                    else:
+                        # Regular class
+                        class_map[full_path] = symbol_id
+                        class_map[simple_path] = symbol_id
+            elif kind in ["Enum", "Package", "Module", "Namespace", "TypeAlias", "TypeDef"]:
+                self._record_symbol(symbol)
 
-        # Second pass: record symbols that might depend on others
+        # Second pass: record methods and fields
         for symbol in symbols:
             symbol_str = symbol.get("symbol", "")
             if not symbol_str:
                 continue
 
             kind = symbol.get("kind", "")
-            # Second pass: handle dependent symbols
-            if kind not in ["Class", "Interface", "Enum", "Package", "Module", "Namespace", "TypeAlias", "TypeDef"]:
-                if kind == "TypeParameter":
-                    # Try to find the owning class/interface from our map
-                    owner_id = type_param_map.get(symbol_str)
-                    if owner_id:
-                        self._record_symbol(symbol, forced_parent_id=owner_id)
-                    else:
-                        self._record_symbol(symbol)
-                else:
-                    self._record_symbol(symbol)
+            if kind in ["Method", "Function", "Constructor", "Field", "Property", "EnumConstant"]:
+                self._record_symbol(symbol, class_map=class_map, private_class_map=private_class_map, generated_class_map=generated_class_map)
 
-    def _record_symbol(self, symbol: Dict[str, Any], forced_parent_id: Optional[int] = None) -> Optional[int]:
+        # Third pass: record remaining symbols
+        for symbol in symbols:
+            symbol_str = symbol.get("symbol", "")
+            if not symbol_str:
+                continue
+
+            kind = symbol.get("kind", "")
+            if kind not in ["Class", "Interface", "Enum", "Package", "Module", "Namespace", "TypeAlias", "TypeDef", 
+                          "Method", "Function", "Constructor", "Field", "Property", "EnumConstant"]:
+                self._record_symbol(symbol, class_map=class_map, private_class_map=private_class_map, generated_class_map=generated_class_map)
+
+    def _record_symbol(self, symbol: Dict[str, Any], forced_parent_id: Optional[int] = None, 
+                      class_map: Optional[Dict[str, int]] = None, 
+                      private_class_map: Optional[Dict[str, int]] = None,
+                      generated_class_map: Optional[Dict[str, int]] = None) -> Optional[int]:
         """Record a single symbol."""
         try:
             symbol_str = symbol.get("symbol", "")
@@ -179,39 +212,57 @@ class ScipToSourcetrail:
                     self.symbol_id_map["test_namespace"] = test_namespace_id
 
             # Get parent info
-            parent_id = forced_parent_id if forced_parent_id is not None else self._resolve_parent(symbol_str, kind, name)
+            parent_id = forced_parent_id
+            if parent_id is None:
+                parent_path = "/".join(symbol_str.split("/")[:-1])
+                simple_path = parent_path.split("#")[0] if "#" in parent_path else parent_path
+                
+                # Try to find parent in appropriate map
+                if class_map is not None:
+                    parent_id = class_map.get(simple_path)
+                if parent_id is None and private_class_map is not None:
+                    parent_id = private_class_map.get(simple_path)
+                if parent_id is None and generated_class_map is not None:
+                    parent_id = generated_class_map.get(simple_path)
+                if parent_id is None:
+                    parent_id = self._resolve_parent(symbol_str, kind, name)
 
             symbol_id = None
 
             # Map SCIP kinds to Sourcetrail records
-            if kind == "TypeParameter":
+            if kind == "Constructor":
                 if parent_id:
-                    # Create a type node for the parameter
-                    type_node_id = self.db.record_type_node(name=name)
-                    if type_node_id:
-                        # Record the type parameter
-                        symbol_id = self.db.record_type_parameter_node(name=name, parent_id=parent_id)
-                        if symbol_id:
-                            # Link type node to type parameter
-                            self.db.record_ref_type_usage(symbol_id, type_node_id)
+                    symbol_id = self.db.record_method(name=name, parent_id=parent_id)
                 else:
-                    # Try to find the enclosing type by looking at the path
-                    parent_path = "/".join(symbol_str.split("/")[:-1])
-                    enclosing_type = parent_path.split("/")[-1].split("#")[0]
-                    if enclosing_type:
-                        class_id = self._find_class_by_name(enclosing_type)
-                        if class_id:
-                            # Create a type node for the parameter
-                            type_node_id = self.db.record_type_node(name=name)
-                            if type_node_id:
-                                # Record the type parameter
-                                symbol_id = self.db.record_type_parameter_node(name=name, parent_id=class_id)
-                                if symbol_id:
-                                    # Link type node to type parameter
-                                    self.db.record_ref_type_usage(symbol_id, type_node_id)
-                    if not symbol_id and is_test_related and test_namespace_id:
-                        symbol_id = self.db.record_type_parameter_node(name=name, parent_id=test_namespace_id)
-                    if not symbol_id:
+                    # Try to find the class this constructor belongs to
+                    class_path = symbol_str.split("#<constructor>")[0] if "#<constructor>" in symbol_str else symbol_str.split("#")[0]
+                    simple_path = class_path.split("#")[0]
+                    class_name = simple_path.split("/")[-1]
+                    
+                    # Try to find in appropriate map based on name
+                    class_id = None
+                    if class_name.startswith("_$") or ".freezed." in simple_path:
+                        if generated_class_map:
+                            class_id = generated_class_map.get(simple_path)
+                            if not class_id and class_name.startswith("_$"):
+                                # Try without _$ prefix
+                                base_name = class_name[2:]
+                                base_path = "/".join(simple_path.split("/")[:-1] + [base_name])
+                                class_id = generated_class_map.get(base_path)
+                    elif class_name.startswith("_"):
+                        if private_class_map:
+                            class_id = private_class_map.get(simple_path)
+                            if not class_id:
+                                # Try without _ prefix
+                                base_name = class_name[1:]
+                                base_path = "/".join(simple_path.split("/")[:-1] + [base_name])
+                                class_id = private_class_map.get(base_path)
+                    elif class_map:
+                        class_id = class_map.get(simple_path)
+                    
+                    if class_id:
+                        symbol_id = self.db.record_method(name=name, parent_id=class_id)
+                    else:
                         self.missing_parent_symbols += 1
             elif kind == "Class" or (not kind and name.endswith("Class")):
                 symbol_id = self.db.record_class(name=name)
@@ -230,20 +281,6 @@ class ScipToSourcetrail:
                     else:
                         self.missing_parent_symbols += 1
                         symbol_id = self.db.record_function(name=name)
-            elif kind == "Constructor":
-                if parent_id:
-                    symbol_id = self.db.record_method(name=name, parent_id=parent_id)
-                else:
-                    if is_test_related and test_namespace_id:
-                        symbol_id = self.db.record_method(name=name, parent_id=test_namespace_id)
-                    else:
-                        # Try to find the class this constructor belongs to
-                        class_name = name.split("#")[0] if "#" in name else name
-                        class_id = self._find_class_by_name(class_name)
-                        if class_id:
-                            symbol_id = self.db.record_method(name=name, parent_id=class_id)
-                        else:
-                            self.missing_parent_symbols += 1
             elif kind == "Parameter":
                 # For constructor parameters, try to find the constructor's class
                 parent_path = "/".join(symbol_str.split("/")[:-1])  # Get parent path
