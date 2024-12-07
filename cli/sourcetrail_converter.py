@@ -333,8 +333,11 @@ class ScipToSourcetrail:
                 self.unregistered_symbols.append(f"{kind} {name} - Error: {str(e)}")
             return None
 
-    def _resolve_parent(self, parent_symbol: str, kind: str, name: str) -> Optional[int]:
+    def _resolve_parent(self, symbol_str: str, kind: str, name: str) -> Optional[int]:
         """Resolve parent ID using various strategies."""
+        # Get parent path
+        parent_symbol = "/".join(symbol_str.split("/")[:-1])
+
         # Direct lookup
         parent_id = self.symbol_id_map.get(parent_symbol)
         if parent_id:
@@ -363,6 +366,26 @@ class ScipToSourcetrail:
             method_id = self.symbol_id_map.get(method_path)
             if method_id:
                 return method_id
+
+        # For type parameters, try to find the generic class/interface
+        if kind == "TypeParameter":
+            # Try to find by path first
+            type_owner_path = "/".join(symbol_str.split("/")[:-1])
+            if "#" in type_owner_path:
+                type_owner_path = type_owner_path.split("#")[0]
+            owner_id = self.symbol_id_map.get(type_owner_path)
+            if owner_id:
+                return owner_id
+
+            # If not found, try to find by name
+            if "/" in symbol_str:
+                type_owner_name = symbol_str.split("/")[-2]
+                if "#" in type_owner_name:
+                    type_owner_name = type_owner_name.split("#")[0]
+                # Look through all symbols for matching class/interface
+                for path, id in self.symbol_id_map.items():
+                    if path.endswith(f"/{type_owner_name}") or path.endswith(f"/{type_owner_name}#"):
+                        return id
 
         return None
 
