@@ -237,133 +237,105 @@ class ScipToSourcetrail:
         
         return range_data
 
-    def _process_symbol(self, symbol):
-        """Process a single symbol and record it in the database."""
-        symbol_str = self._get_safe(symbol, "symbol", "")
+    def _process_symbol(self, symbol: Dict[str, Any]) -> Optional[int]:
+        """Process a single symbol and record it in the database.
+        
+        Args:
+            symbol: Dictionary containing symbol data
+            
+        Returns:
+            Optional[int]: The symbol ID if successfully recorded, None otherwise
+        """
+        symbol_str = symbol.get("symbol", "")
         if not symbol_str:
             return None
             
-        # Extract name from symbol string
+        # Skip local symbols
+        if symbol_str.startswith("local "):
+            self.skipped_local_symbols += 1
+            return None
+            
+        # Get basic symbol info
+        kind = symbol.get("kind", "")
         name = symbol_str.split("/")[-1] if "/" in symbol_str else symbol_str
+        
+        # Clean up name
         if name.endswith("."): 
-            name = name[:-1]  # Remove trailing dot
+            name = name[:-1]
         if name.startswith("`") and name.endswith("`"):
-            name = name[1:-1]  # Remove backticks
+            name = name[1:-1]
+            
+        # Handle method names
         if "#" in name:
-            base_name = name.split("#")[0]  # Remove Dart-specific suffixes
-            # Keep getter/setter info if present
-            if "<get>" in name or "<set>" in name:
-                accessor = name[name.index("<"):name.index(">") + 1]
+            base_name = name.split("#")[0]
+            method_name = name.split("#")[1]
+            if "<get>" in method_name or "<set>" in method_name:
+                accessor = method_name[method_name.index("<"):method_name.index(">") + 1]
                 name = f"{base_name}{accessor}"
-            elif "<constructor>" in name:
-                # For constructors, use the class name
+            elif "<constructor>" in method_name:
                 name = base_name
             else:
-                name = base_name
+                name = method_name.rstrip("().")
         
-        kind = self._get_safe(symbol, "kind", "")
+        # Get parent info if this is a member
+        parent_id = None
+        if "/" in symbol_str:
+            parent_path = "/".join(symbol_str.split("/")[:-1])
+            parent_id = self.symbol_id_map.get(parent_path)
         
-        if kind == "Class" or kind == "Interface" or (not kind and name.endswith("Class")):
-            # Record the class/interface
-            symbol_id = self.db.record_class(name=name)
-            
-            # Record documentation and location
-            documentation = self._get_documentation(symbol)
-            signature = self._get_signature(symbol)
-            
-            file_id = self.file_id_map.get(self._get_safe(symbol, "document_path", ""))
-            if file_id:
-                self._record_location_data(symbol_id, symbol, file_id)
-            
-            # Add to test namespace if test-related
-            is_test_related = any(x in name for x in ["test", "mock", "fake", "_Fake", "Mock"])
-            if is_test_related:
-                test_namespace_id = self.symbol_id_map.get("test_namespace")
-                if not test_namespace_id:
-                    test_namespace_id = self.db.record_namespace(name="Tests")
-                    self.symbol_id_map["test_namespace"] = test_namespace_id
-                self.db.record_ref_usage(symbol_id, test_namespace_id)
-            
-            return symbol_id
-            
-        elif kind == "Method" or (self._get_signature(symbol) and self._get_signature(symbol).endswith("()")):
-            parent_id = self._get_safe(symbol, "parent_id")
+        # Record symbol based on kind
+        symbol_id = None
+        if kind == "Class" or kind == "Interface" or (not kind and symbol_str.endswith("Class")):
+            symbol_id = self.db.record_class(name=name, parent_id=parent_id)
+            self.stats["classes" if kind != "Interface" else "interfaces"] += 1
+        elif kind == "Method" or kind == "Constructor":
+            symbol_id = self.db.record_method(name=name, parent_id=parent_id)
             if parent_id:
-                # For class methods
-                is_getter = "<get>" in symbol_str
-                is_setter = "<set>" in symbol_str
-                is_operator = "operator" in name.lower()
-                
-                if is_getter or is_setter:
-                    # Record accessor method
-                    accessor_type = "get" if is_getter else "set"
-                    base_name = name[:name.index("<")]
-                    # First record the field
-                    field_id = self.db.record_field(name=base_name, parent_id=parent_id)
-                    # Then record the accessor method
-                    symbol_id = self.db.record_method(name=f"{base_name}.{accessor_type}", parent_id=parent_id)
-                    # Link accessor to field
-                    if field_id and symbol_id:
-                        self.db.record_ref_usage(symbol_id, field_id)
-                        self._record_location_data(symbol_id, symbol)
-                        
-                elif is_operator:
-                    # Record operator method
-                    symbol_id = self.db.record_method(name=f"operator {name}", parent_id=parent_id)
-                    self.db.record_ref_member(parent_id, symbol_id)
-                    self._record_location_data(symbol_id, symbol)
-                    
-                else:
-                    # Regular method
-                    symbol_id = self.db.record_method(name=name, parent_id=parent_id)
-                    self.db.record_ref_member(parent_id, symbol_id)
-                    
-                    # Record location data
-                    range_data = self._record_location_data(symbol_id, symbol)
-                    if range_data:
-                        # Record signature location if we have a signature
-                        signature = self._get_signature(symbol)
-                        if signature:
-                            file_id = self.file_id_map.get(self._get_safe(symbol, "document_path", ""))
-                            if file_id:
-                                self.db.record_symbol_signature_location(
-                                    symbol_id,
-                                    file_id,
-                                    range_data["start_line"],
-                                    range_data["start_col"],
-                                    range_data["end_line"],
-                                    range_data["end_col"]
-                                )
-                    
-                    # Record method call relationships with enhanced tracking
-                    self._record_call_relationships(symbol_id, symbol, self._get_safe(symbol, "occurrences", []))
-                
-                return symbol_id
-                
-            else:
-                # For top-level functions
-                file_path = None
-                docs = self._get_safe(symbol, "documents", [])
-                if isinstance(docs, list):
-                    for doc in docs:
-                        if isinstance(doc, dict) and doc.get("relative_path"):
-                            file_path = doc["relative_path"]
-                            break
-                
-                if file_path:
-                    namespace_path = os.path.dirname(file_path).replace("/", ".")
-                    if namespace_path:
-                        namespace_id = self.symbol_id_map.get(namespace_path)
-                        if not namespace_id:
-                            namespace_id = self.db.record_namespace(name=namespace_path)
-                            self.symbol_id_map[namespace_path] = namespace_id
-                        symbol_id = self.db.record_method(name=name, parent_id=namespace_id)
-                        self.db.record_ref_member(namespace_id, symbol_id)
-                        return symbol_id
+                self.db.record_ref_member(parent_id, symbol_id)
+            self.stats["methods"] += 1
+        elif kind == "Field" or kind == "Property":
+            symbol_id = self.db.record_field(name=name, parent_id=parent_id)
+            if parent_id:
+                self.db.record_ref_member(parent_id, symbol_id)
+            self.stats["fields"] += 1
+        elif kind == "Function":
+            symbol_id = self.db.record_function(name=name)
+            self.stats["functions"] += 1
+        elif kind == "Variable":
+            symbol_id = self.db.record_global_variable(name=name)
+            self.stats["variables"] += 1
+        
+        # Record location if available
+        if symbol_id:
+            file_path = self._get_safe(symbol, "document_path", "")
+            file_id = self.file_id_map.get(file_path)
+            if file_id:
+                range_data = symbol.get("range", {})
+                if range_data:
+                    if isinstance(range_data, list):
+                        start_line, start_col, end_col = range_data
+                        end_line = start_line
                     else:
-                        return self.db.record_function(name=name)
-                else:
-                    return self.db.record_function(name=name)
+                        start = range_data.get("start", {})
+                        end = range_data.get("end", start)
+                        start_line = start.get("line", 0)
+                        start_col = start.get("character", 0)
+                        end_line = end.get("line", start_line)
+                        end_col = end.get("character", start_col)
+                    
+                    self.db.record_symbol_location(
+                        symbol_id,
+                        file_id,
+                        start_line,
+                        start_col,
+                        end_line,
+                        end_col
+                    )
+            
+            # Store in symbol map
+            self.symbol_id_map[symbol_str] = symbol_id
+        
+        return symbol_id
 
     def _record_call_relationships(self, symbol_id: int, symbol: Dict[str, Any], occurrences: List[Dict[str, Any]]) -> None:
         """Record all types of call relationships for a symbol.
@@ -373,13 +345,6 @@ class ScipToSourcetrail:
             symbol: SCIP symbol data
             occurrences: List of symbol occurrences
         """
-        # Get symbol signature to determine if it's async
-        signature = self._get_signature(symbol)
-        is_async = "async" in signature if signature else False
-        
-        if is_async:
-            self.call_stats["async_methods"].add(symbol_id)
-        
         # Get caller info for stats
         caller_name = self._get_safe(symbol, "display_name", "unknown")
         file_path = self._get_safe(symbol, "document_path", "unknown")
@@ -389,92 +354,102 @@ class ScipToSourcetrail:
             if not isinstance(occurrence, dict):
                 continue
                 
-            # Check if this is a call occurrence
+            # Check relationships field first
+            relationships = occurrence.get("relationships", [])
+            for relationship in relationships:
+                target_symbol = relationship.get("symbol", "")
+                if not target_symbol or target_symbol.startswith("local "):
+                    continue
+                    
+                # Parse the SCIP symbol to check if it's a method
+                parts = target_symbol.split("/")
+                if len(parts) >= 2:
+                    last_part = parts[-1]
+                    # Check for method call pattern in Dart SCIP format
+                    if "#" in last_part and last_part.endswith("()."):
+                        target_id = self.symbol_id_map.get(target_symbol)
+                        if target_id:
+                            # Record the call relationship
+                            self.db.record_ref_call(symbol_id, target_id)
+                            self.call_stats["direct_calls"] += 1
+                            self.call_stats["total_calls"] += 1
+                            
+                            # Record location if available
+                            file_id = self.file_id_map.get(file_path)
+                            if file_id and "range" in occurrence:
+                                range_data = occurrence["range"]
+                                if isinstance(range_data, list):
+                                    start_line, start_col, end_col = range_data
+                                    end_line = start_line
+                                else:
+                                    start = range_data.get("start", {})
+                                    end = range_data.get("end", start)
+                                    start_line = start.get("line", 0)
+                                    start_col = start.get("character", 0)
+                                    end_line = end.get("line", start_line)
+                                    end_col = end.get("character", start_col)
+                                
+                                self.db.record_reference_location(
+                                    symbol_id,
+                                    file_id,
+                                    start_line,
+                                    start_col,
+                                    end_line,
+                                    end_col
+                                )
+                            
+                            # Update stats
+                            self.call_stats["calls_by_file"][file_path] = self.call_stats["calls_by_file"].get(file_path, 0) + 1
+                            target_name = relationship.get("display_name", target_symbol)
+                            self.call_stats["most_called_methods"][target_name] = self.call_stats["most_called_methods"].get(target_name, 0) + 1
+                            self.call_stats["most_calling_methods"][caller_name] = self.call_stats["most_calling_methods"].get(caller_name, 0) + 1
+            
+            # Also check symbol_roles for direct method calls
             symbol_roles = occurrence.get("symbol_roles", 0)
-            if symbol_roles & 0x04:  # Call role bit
-                target_symbol = occurrence.get("symbol", "")
-                target_id = self.symbol_id_map.get(target_symbol)
-                
-                if target_id:
-                    # Record basic call relationship
-                    self.db.record_ref_call(symbol_id, target_id)
-                    self.call_stats["direct_calls"] += 1
-                    self.call_stats["total_calls"] += 1
-                    
-                    # Update calls by file
-                    self.call_stats["calls_by_file"][file_path] = self.call_stats["calls_by_file"].get(file_path, 0) + 1
-                    
-                    # Update most called methods
-                    target_name = occurrence.get("display_name", target_symbol)
-                    self.call_stats["most_called_methods"][target_name] = self.call_stats["most_called_methods"].get(target_name, 0) + 1
-                    
-                    # Update most calling methods
-                    self.call_stats["most_calling_methods"][caller_name] = self.call_stats["most_calling_methods"].get(caller_name, 0) + 1
-                    
-                    # If this is an async call, record additional async relationship
-                    if is_async:
-                        self.db.record_ref_usage(symbol_id, target_id)  # Mark async dependency
-                        self.call_stats["async_calls"] += 1
-                        
-                    # Check if this is a callback registration
-                    if self._is_callback_registration(occurrence):
-                        self.db.record_ref_usage(target_id, symbol_id)  # Callback can use the caller
-                        self.call_stats["callback_registrations"] += 1
-                        self.call_stats["callback_methods"].add(target_id)
-        
-        # Process indirect calls (e.g., through function pointers or callbacks)
-        self._record_indirect_calls(symbol_id, symbol)
-
-    def _is_callback_registration(self, occurrence: Dict[str, Any]) -> bool:
-        """Determine if an occurrence represents callback registration."""
-        # Common callback registration patterns in Dart
-        callback_patterns = [
-            "addListener",
-            "listen",
-            "forEach",
-            "map",
-            "where",
-            "then",
-            "catchError",
-            "onError",
-            "whenComplete"
-        ]
-        
-        symbol = occurrence.get("symbol", "")
-        return any(pattern in symbol for pattern in callback_patterns)
-        
-    def _record_indirect_calls(self, symbol_id: int, symbol: Dict[str, Any]) -> None:
-        """Record indirect call relationships (function pointers, callbacks)."""
-        # Get relationships that might indicate indirect calls
-        relationships = symbol.get("relationships", [])
-        
-        for rel in relationships:
-            if not isinstance(rel, dict):
-                continue
-                
-            target_symbol = rel.get("symbol", "")
-            target_id = self.symbol_id_map.get(target_symbol)
+            target_symbol = occurrence.get("symbol", "")
             
-            if not target_id:
-                continue
-                
-            # Check relationship type
-            is_reference = rel.get("is_reference", False)
-            is_implementation = rel.get("is_implementation", False)
-            
-            if is_reference:
-                # Function reference - could be used as callback
-                self.db.record_ref_usage(symbol_id, target_id)
-                self.call_stats["indirect_calls"] += 1
-                self.call_stats["total_calls"] += 1
-                
-            if is_implementation:
-                # Interface/abstract method implementation
-                self.db.record_ref_implementation(symbol_id, target_id)
-                # The implementation might be called through the interface
-                self.db.record_ref_call(target_id, symbol_id)
-                self.call_stats["interface_calls"] += 1
-                self.call_stats["total_calls"] += 1
+            if (symbol_roles & 0x8) and target_symbol and not target_symbol.startswith("local "):
+                parts = target_symbol.split("/")
+                if len(parts) >= 2:
+                    last_part = parts[-1]
+                    # Check for method call pattern
+                    if "#" in last_part and last_part.endswith("()."):
+                        target_id = self.symbol_id_map.get(target_symbol)
+                        if target_id:
+                            # Record the call relationship if not already recorded
+                            self.db.record_ref_call(symbol_id, target_id)
+                            self.call_stats["direct_calls"] += 1
+                            self.call_stats["total_calls"] += 1
+                            
+                            # Record location if available
+                            file_id = self.file_id_map.get(file_path)
+                            if file_id and "range" in occurrence:
+                                range_data = occurrence["range"]
+                                if isinstance(range_data, list):
+                                    start_line, start_col, end_col = range_data
+                                    end_line = start_line
+                                else:
+                                    start = range_data.get("start", {})
+                                    end = range_data.get("end", start)
+                                    start_line = start.get("line", 0)
+                                    start_col = start.get("character", 0)
+                                    end_line = end.get("line", start_line)
+                                    end_col = end.get("character", start_col)
+                                
+                                self.db.record_reference_location(
+                                    symbol_id,
+                                    file_id,
+                                    start_line,
+                                    start_col,
+                                    end_line,
+                                    end_col
+                                )
+                            
+                            # Update stats
+                            self.call_stats["calls_by_file"][file_path] = self.call_stats["calls_by_file"].get(file_path, 0) + 1
+                            target_name = occurrence.get("display_name", target_symbol)
+                            self.call_stats["most_called_methods"][target_name] = self.call_stats["most_called_methods"].get(target_name, 0) + 1
+                            self.call_stats["most_calling_methods"][caller_name] = self.call_stats["most_calling_methods"].get(caller_name, 0) + 1
 
     def _record_symbols(self, symbols: List[Dict[str, Any]]) -> None:
         """Record symbols in Sourcetrail DB."""
@@ -525,7 +500,6 @@ class ScipToSourcetrail:
                     if not test_namespace_id:
                         test_namespace_id = self.db.record_namespace(name="Tests")
                         self.symbol_id_map["test_namespace"] = test_namespace_id
-                        self.stats["namespaces"] += 1
                     self.db.record_ref_usage(symbol_id, test_namespace_id)
                 
                 # Store both full path and simple path
@@ -586,13 +560,14 @@ class ScipToSourcetrail:
                     name = name[1:-1]
                 if "#" in name:
                     base_name = name.split("#")[0]
-                    if "<get>" in name or "<set>" in name:
-                        accessor = name[name.index("<"):name.index(">") + 1]
+                    method_name = name.split("#")[1]
+                    if "<get>" in method_name or "<set>" in method_name:
+                        accessor = method_name[method_name.index("<"):method_name.index(">") + 1]
                         name = f"{base_name}{accessor}"
-                    elif "<constructor>" in name:
+                    elif "<constructor>" in method_name:
                         name = base_name
                     else:
-                        name = base_name
+                        name = method_name.rstrip("().")
                 
                 # Get parent info
                 parent_path = "/".join(symbol_str.split("/")[:-1])
@@ -641,12 +616,13 @@ class ScipToSourcetrail:
         """Record relationships between symbols."""
         for occurrence in occurrences:
             try:
-                symbol = occurrence.get("symbol", "")
-                if not symbol or symbol.startswith("local "):
-                    continue  # Skip local variable targets
+                # Get source symbol
+                source_symbol = occurrence.get("symbol", "")
+                if not source_symbol or source_symbol.startswith("local "):
+                    continue  # Skip local variable sources
                 
-                symbol_id = self.symbol_id_map.get(symbol)
-                if not symbol_id:
+                source_id = self.symbol_id_map.get(source_symbol)
+                if not source_id:
                     continue
 
                 # Record symbol location if available
@@ -668,7 +644,7 @@ class ScipToSourcetrail:
                     end_col = end.get("character", start_col)
                 
                     self.db.record_symbol_location(
-                        symbol_id,
+                        source_id,
                         file_id,
                         start_line,
                         start_col,
@@ -678,79 +654,81 @@ class ScipToSourcetrail:
                 
                 # Record relationships
                 symbol_roles = occurrence.get("symbol_roles", 0)
-                target = occurrence.get("target", "")
-                if not target or target.startswith("local "):
-                    continue  # Skip local variable targets
-                    
-                target_id = self.symbol_id_map.get(target)
-                if not target_id:
-                    continue
-
-                # Extract relationship context
-                is_mixin = "with" in occurrence.get("syntax", "").lower()
-                is_interface = "implements" in occurrence.get("syntax", "").lower()
-                is_superclass = "extends" in occurrence.get("syntax", "").lower()
                 
-                # Map SCIP symbol roles to Sourcetrail relationships
-                try:
-                    # Basic references and definitions
-                    if symbol_roles & 0x2:  # Definition
-                        self.db.record_ref_usage(symbol_id, target_id)
-                    if symbol_roles & 0x4:  # Reference
-                        self.db.record_ref_usage(symbol_id, target_id)
+                # Get target symbol from relationships
+                relationships = occurrence.get("relationships", [])
+                for relationship in relationships:
+                    target_symbol = relationship.get("symbol", "")
+                    if not target_symbol or target_symbol.startswith("local "):
+                        continue  # Skip local variable targets
                         
-                    # Variable access
-                    if symbol_roles & 0x8:  # Read
-                        self.db.record_ref_usage(symbol_id, target_id)
-                    if symbol_roles & 0x10:  # Write
-                        self.db.record_ref_usage(symbol_id, target_id)
-                        
-                    # Method calls and implementations
-                    if symbol_roles & 0x20:  # Call
-                        self.db.record_ref_call(symbol_id, target_id)
-                    if symbol_roles & 0x40:  # Implementation
-                        if is_interface:
-                            # Interface implementation
-                            self.db.record_ref_implementation(symbol_id, target_id)
-                        elif is_mixin:
-                            # Mixin usage
-                            self.db.record_ref_usage(symbol_id, target_id)
-                            self.db.record_ref_implementation(symbol_id, target_id)
-                        else:
-                            # Regular implementation
-                            self.db.record_ref_inheritance(symbol_id, target_id)
+                    target_id = self.symbol_id_map.get(target_symbol)
+                    if not target_id:
+                        continue
+
+                    # Extract relationship context
+                    is_mixin = "with" in occurrence.get("syntax", "").lower()
+                    is_interface = "implements" in occurrence.get("syntax", "").lower()
+                    is_superclass = "extends" in occurrence.get("syntax", "").lower()
+                    
+                    # Map SCIP symbol roles to Sourcetrail relationships
+                    try:
+                        # Basic references and definitions
+                        if symbol_roles & 0x1:  # Definition
+                            self.db.record_ref_usage(source_id, target_id)
+                        if symbol_roles & 0x2:  # Import
+                            self.db.record_ref_import(source_id, target_id)
                             
-                    # Inheritance and overrides
-                    if symbol_roles & 0x80:  # Override
+                        # Variable access and method calls
+                        if symbol_roles & 0x8:  # ReadAccess
+                            # For methods, this indicates a call
+                            if "#" in target_symbol and target_symbol.endswith("()."):
+                                self.db.record_ref_call(source_id, target_id)
+                            else:
+                                self.db.record_ref_usage(source_id, target_id)
+                                
+                        if symbol_roles & 0x4:  # WriteAccess
+                            self.db.record_ref_usage(source_id, target_id)
+                            
+                        # Method calls and implementations
+                        if symbol_roles & 0x40:  # ForwardDefinition - often used for interface implementations
+                            if is_interface:
+                                # Interface implementation
+                                self.db.record_ref_implementation(source_id, target_id)
+                            elif is_mixin:
+                                # Mixin usage
+                                self.db.record_ref_usage(source_id, target_id)
+                                self.db.record_ref_implementation(source_id, target_id)
+                            else:
+                                # Regular implementation
+                                self.db.record_ref_inheritance(source_id, target_id)
+                                
+                        # Inheritance and overrides
                         if is_superclass:
-                            # Superclass method override
-                            self.db.record_ref_override(symbol_id, target_id)
-                            self.db.record_ref_inheritance(symbol_id, target_id)
-                        else:
-                            # Interface or mixin method override
-                            self.db.record_ref_override(symbol_id, target_id)
+                            # Superclass inheritance
+                            self.db.record_ref_inheritance(source_id, target_id)
+                            if symbol_roles & 0x1:  # If also a definition, it's an override
+                                self.db.record_ref_override(source_id, target_id)
+                                
+                        # Type relationships
+                        if symbol_roles & 0x1 and target_symbol.endswith("#"):  # Type definition
+                            if is_interface:
+                                # Interface usage
+                                self.db.record_ref_implementation(source_id, target_id)
+                            elif is_mixin:
+                                # Mixin usage
+                                self.db.record_ref_usage(source_id, target_id)
+                            else:
+                                # Regular type usage
+                                self.db.record_ref_type_usage(source_id, target_id)
+                                
+                        # Additional Dart-specific relationships
+                        if target_symbol.endswith("<>"):  # Type parameter (generic)
+                            self.db.record_ref_type_usage(source_id, target_id)
+                        if "<" in target_symbol and ">" in target_symbol:  # Type argument
+                            self.db.record_ref_type_usage(source_id, target_id)
                             
-                    # Type relationships
-                    if symbol_roles & 0x100:  # TypeDefinition
-                        if is_interface:
-                            # Interface usage
-                            self.db.record_ref_implementation(symbol_id, target_id)
-                        elif is_mixin:
-                            # Mixin usage
-                            self.db.record_ref_usage(symbol_id, target_id)
-                        else:
-                            # Regular type usage
-                            self.db.record_ref_type_usage(symbol_id, target_id)
-                            
-                    # Additional Dart-specific relationships
-                    if symbol_roles & 0x200:  # Type parameter (generic)
-                        self.db.record_ref_type_usage(symbol_id, target_id)
-                    if symbol_roles & 0x400:  # Type argument
-                        self.db.record_ref_type_usage(symbol_id, target_id)
-                    if symbol_roles & 0x800:  # Type bound
-                        self.db.record_ref_type_usage(symbol_id, target_id)
-                        
-                except Exception as e:
-                    self.failed_relationships.append(f"{symbol} -> {target} (roles: {symbol_roles}) - Error: {str(e)}")
+                    except Exception as e:
+                        self.failed_relationships.append(f"{source_symbol} -> {target_symbol} (roles: {symbol_roles}) - Error: {str(e)}")
             except Exception as e:
                 self.failed_relationships.append(f"Failed to process occurrence - Error: {str(e)}")
