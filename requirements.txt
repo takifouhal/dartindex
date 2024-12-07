@@ -7,3 +7,6 @@ pytest>=7.0.0
 # Build and compilation
 pyinstaller>=5.13.0
 build>=1.0.0
+
+# HTTP requests
+requests>=2.31.0
