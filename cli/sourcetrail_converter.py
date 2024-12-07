@@ -96,22 +96,23 @@ class ScipToSourcetrail:
 
     def _record_symbols(self, symbols: List[Dict[str, Any]]) -> None:
         """Record symbols in Sourcetrail DB."""
-        # First pass: record all non-dependent symbols
+        # First pass: record all non-dependent symbols and build type parameter map
+        type_param_map = {}  # Map to store type parameters and their owners
         for symbol in symbols:
             symbol_str = symbol.get("symbol", "")
             if not symbol_str:
                 continue
 
-            # Skip local variables but don't count test-related ones in skipped count
-            if symbol_str.startswith("local "):
-                if not any(x in symbol_str for x in ["test", "mock", "fake"]):
-                    self.skipped_local_symbols += 1
-                continue
-
             kind = symbol.get("kind", "")
-            # First pass: only handle non-dependent symbols
+            # First pass: handle non-dependent symbols and collect type parameter info
             if kind in ["Class", "Interface", "Enum", "Package", "Module", "Namespace", "TypeAlias", "TypeDef"]:
-                self._record_symbol(symbol)
+                symbol_id = self._record_symbol(symbol)
+                if symbol_id and kind in ["Class", "Interface"]:
+                    # Check if this class/interface has type parameters
+                    class_path = symbol_str.split("#")[0] if "#" in symbol_str else symbol_str
+                    for s in symbols:
+                        if s.get("kind") == "TypeParameter" and s.get("symbol", "").startswith(class_path):
+                            type_param_map[s.get("symbol")] = symbol_id
 
         # Second pass: record symbols that might depend on others
         for symbol in symbols:
@@ -122,9 +123,17 @@ class ScipToSourcetrail:
             kind = symbol.get("kind", "")
             # Second pass: handle dependent symbols
             if kind not in ["Class", "Interface", "Enum", "Package", "Module", "Namespace", "TypeAlias", "TypeDef"]:
-                self._record_symbol(symbol)
+                if kind == "TypeParameter":
+                    # Try to find the owning class/interface from our map
+                    owner_id = type_param_map.get(symbol_str)
+                    if owner_id:
+                        self._record_symbol(symbol, forced_parent_id=owner_id)
+                    else:
+                        self._record_symbol(symbol)
+                else:
+                    self._record_symbol(symbol)
 
-    def _record_symbol(self, symbol: Dict[str, Any]) -> Optional[int]:
+    def _record_symbol(self, symbol: Dict[str, Any], forced_parent_id: Optional[int] = None) -> Optional[int]:
         """Record a single symbol."""
         try:
             symbol_str = symbol.get("symbol", "")
@@ -170,13 +179,40 @@ class ScipToSourcetrail:
                     self.symbol_id_map["test_namespace"] = test_namespace_id
 
             # Get parent info
-            parent_symbol = "/".join(symbol_str.split("/")[:-1])  # Get parent path
-            parent_id = self._resolve_parent(parent_symbol, kind, name)
+            parent_id = forced_parent_id if forced_parent_id is not None else self._resolve_parent(symbol_str, kind, name)
 
             symbol_id = None
 
             # Map SCIP kinds to Sourcetrail records
-            if kind == "Class" or (not kind and name.endswith("Class")):
+            if kind == "TypeParameter":
+                if parent_id:
+                    # Create a type node for the parameter
+                    type_node_id = self.db.record_type_node(name=name)
+                    if type_node_id:
+                        # Record the type parameter
+                        symbol_id = self.db.record_type_parameter_node(name=name, parent_id=parent_id)
+                        if symbol_id:
+                            # Link type node to type parameter
+                            self.db.record_ref_type_usage(symbol_id, type_node_id)
+                else:
+                    # Try to find the enclosing type by looking at the path
+                    enclosing_type = symbol_str.split("/")[-2] if len(symbol_str.split("/")) > 1 else None
+                    if enclosing_type:
+                        class_id = self._find_class_by_name(enclosing_type)
+                        if class_id:
+                            # Create a type node for the parameter
+                            type_node_id = self.db.record_type_node(name=name)
+                            if type_node_id:
+                                # Record the type parameter
+                                symbol_id = self.db.record_type_parameter_node(name=name, parent_id=class_id)
+                                if symbol_id:
+                                    # Link type node to type parameter
+                                    self.db.record_ref_type_usage(symbol_id, type_node_id)
+                    if not symbol_id and is_test_related and test_namespace_id:
+                        symbol_id = self.db.record_type_parameter_node(name=name, parent_id=test_namespace_id)
+                    if not symbol_id:
+                        self.missing_parent_symbols += 1
+            elif kind == "Class" or (not kind and name.endswith("Class")):
                 symbol_id = self.db.record_class(name=name)
                 if is_test_related and test_namespace_id:
                     self.db.record_ref_usage(symbol_id, test_namespace_id)
@@ -272,20 +308,6 @@ class ScipToSourcetrail:
                     elif is_test_related and test_namespace_id:
                         symbol_id = self.db.record_enum_constant(name=name, parent_id=test_namespace_id)
                     else:
-                        self.missing_parent_symbols += 1
-            elif kind == "TypeParameter":
-                if parent_id:
-                    symbol_id = self.db.record_type_parameter_node(name=name, parent_id=parent_id)
-                else:
-                    # Try to find the enclosing type by looking at the path
-                    enclosing_type = symbol_str.split("/")[-2] if len(symbol_str.split("/")) > 1 else None
-                    if enclosing_type:
-                        class_id = self._find_class_by_name(enclosing_type)
-                        if class_id:
-                            symbol_id = self.db.record_type_parameter_node(name=name, parent_id=class_id)
-                    if not symbol_id and is_test_related and test_namespace_id:
-                        symbol_id = self.db.record_type_parameter_node(name=name, parent_id=test_namespace_id)
-                    if not symbol_id:
                         self.missing_parent_symbols += 1
             elif kind == "TypeAlias" or kind == "TypeDef":
                 symbol_id = self.db.record_typedef_node(name=name)
