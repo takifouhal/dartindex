@@ -10,6 +10,7 @@ setup(
         "protobuf>=4.21.0",
         "gitpython>=3.1.0",
         "requests>=2.31.0",
+        "numbat>=0.1.0",
     ],
     entry_points={
         "console_scripts": [

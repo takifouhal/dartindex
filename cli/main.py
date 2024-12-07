@@ -8,12 +8,15 @@ import os
 import sys
 from typing import Optional
 import click
+from pathlib import Path
+import json
 from cli.dart_indexer import DartIndexer
 from cli.scip_processor import SCIPProcessor
+from cli.sourcetrail_converter import ScipToSourcetrail
 
 @click.group()
 def cli() -> None:
-    """CLI tool for working with Dart project indexing."""
+    """DartIndex - A tool for indexing Dart/Flutter projects with SCIP and Sourcetrail support."""
     pass
 
 @cli.command()
@@ -27,40 +30,60 @@ def cli() -> None:
     )
 )
 @click.option(
-    '--format',
-    type=click.Choice(['text', 'summary', 'json']),
-    default='json',
-    help='Output format: text for full protobuf text format, summary for high-level overview, json for JSON format'
+    '-o', '--output',
+    'sourcetrail_db',
+    type=click.Path(
+        file_okay=True,
+        dir_okay=False,
+        resolve_path=True
+    ),
+    default=None,
+    help='Path for the Sourcetrail database (default: <project_name>.srctrldb in project directory)'
 )
-@click.option(
-    '--symbols-only',
-    is_flag=True,
-    help='Show only symbol information'
-)
-def index(project_path: str, format: str, symbols_only: bool) -> None:
-    """
-    Index a Dart project and output the results.
-    
-    Args:
-        project_path: Path to the Dart project root
-        format: Output format (text, summary, or json)
-        symbols_only: Whether to show only symbol information
+def index(project_path: str, sourcetrail_db: Optional[str] = None) -> None:
+    """Index a Dart/Flutter project and generate a Sourcetrail database.
+
+    Creates a Sourcetrail-compatible index of your project's codebase.
+    Automatically detects FVM if present.
+
+    Example:
+        $ dartindex index .
+        $ dartindex index /path/to/project -o custom.srctrldb
     """
     try:
+        # Determine database path if not provided
+        if sourcetrail_db is None:
+            project_name = Path(project_path).name
+            sourcetrail_db = str(Path(project_path) / f"{project_name}.srctrldb")
+
+        click.echo(f"Using database path: {sourcetrail_db}", err=True)
+
         # Initialize components
         indexer = DartIndexer()
         processor = SCIPProcessor()
         
-        # Index the project
+        # Index the project and get SCIP data
         click.echo("Indexing Dart project...", err=True)
+        click.echo("This may take a few minutes for large projects...", err=True)
         scip_data = indexer.index_project(project_path)
         
-        # Process and output the results
-        click.echo("Processing results...", err=True)
-        output = processor.process_data(scip_data, format, symbols_only)
-        click.echo(output)
+        # Convert SCIP to JSON format
+        click.echo("Converting SCIP to JSON...", err=True)
+        scip_json = processor.process_data(scip_data)
+        
+        # Parse JSON string back to dictionary
+        scip_dict = json.loads(scip_json)
+        
+        # Convert to Sourcetrail DB
+        click.echo("Creating Sourcetrail database...", err=True)
+        converter = ScipToSourcetrail(sourcetrail_db)
+        converter.convert(scip_dict)
+        
+        click.echo(f"\nSuccess! 🎉 Sourcetrail database created at: {sourcetrail_db}", err=True)
+        click.echo("\nYou can now open this database with Sourcetrail to explore your project.", err=True)
         
     except Exception as e:
+        click.echo("\n❌ Error occurred:", err=True)
         raise click.ClickException(str(e))
 
 def main() -> None:

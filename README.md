@@ -6,6 +6,7 @@ A command-line tool for indexing Dart projects using SCIP (Source Code Intellige
 
 - Index Dart projects using SCIP protocol
 - Generate code intelligence data
+- Create Sourcetrail-compatible databases
 - No external dependencies required (everything is bundled)
 - Single binary installation
 - Support for Flutter Version Management (FVM)
@@ -54,22 +55,12 @@ make install-dev
 ## Usage
 
 ```bash
-# Index a Dart project and output JSON
-dartindex index /path/to/dart/project
+# Index a Dart project (creates <project_name>.srctrldb)
+dartindex index .
 
-# Get a summary view
-dartindex index /path/to/dart/project --format summary
-
-# Get only symbol information
-dartindex index /path/to/dart/project --symbols-only
+# Specify custom output path
+dartindex index /path/to/project -o custom.srctrldb
 ```
-
-### Output Formats
-
-The tool supports multiple output formats:
-- `json`: Full SCIP index data in JSON format (default)
-- `summary`: High-level overview of the indexed project
-- `text`: Full protobuf text format
 
 ### FVM Support
 
