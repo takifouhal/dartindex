@@ -1,25 +1,27 @@
-.PHONY: clean build install install-dev update update-dev test dist tools
+PYTHON := $(shell which python3)
+
+.PHONY: clean build install install-dev update update-dev test tools
 
 clean:
-	rm -rf build/ dist/ *.egg-info/ __pycache__/ .pytest_cache/ .coverage cli/tools/
+	rm -rf -f build/ dist/ *.egg-info/ __pycache__/ .pytest_cache/ .coverage cli/tools/
 
 build: clean
-	python -m build
+	$(PYTHON) -m build
 
 # Build the native tools (scip-dart and scip)
 tools: clean
 	mkdir -p cli/tools/dart cli/tools/go
-	python build_tools.py
+	$(PYTHON) build_tools.py || exit 1
 
 # Build the Python package and create executable
 dist: install-dev
-	python -m pip install --upgrade pip build
-	python -m build
-	pyinstaller dartindex.spec
+	$(PYTHON) -m pip install --upgrade pip build pyinstaller
+	$(PYTHON) -m build
+	$(PYTHON) -m PyInstaller dartindex.spec
 
 # Development installation (editable mode)
 install-dev:
-	pip install -e .
+	$(PYTHON) -m pip install -e .
 
 # Production installation (system-wide)
 install: dist
@@ -32,8 +34,8 @@ install: dist
 
 # Update development installation
 update-dev:
-	pip uninstall dartindex -y || true
-	pip install -e .
+	$(PYTHON) -m pip uninstall dartindex -y || true
+	$(PYTHON) -m pip install -e .
 
 # Update production installation (build tools once, then package and install)
 update:
@@ -42,4 +44,4 @@ update:
 	$(MAKE) install
 
 test:
-	pytest tests/
+	$(PYTHON) -m pytest tests/

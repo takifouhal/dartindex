@@ -17,7 +17,8 @@ A command-line tool for indexing Dart projects using SCIP (Source Code Intellige
 ## Prerequisites
 
 For building from source:
-- Python 3.7+
+- Python 3.7+ (Python 3.12+ recommended)
+- protobuf 5.29.1 or higher
 - Dart SDK
 - Go 1.16+
 - Make
@@ -35,9 +36,20 @@ git clone https://github.com/yourusername/dartindex.git
 cd dartindex
 ```
 
-2. Install the tool system-wide:
+2. Set up the development environment:
 ```bash
-sudo make update
+# This will create a virtual environment and install all dependencies
+./setup_dev.sh
+```
+
+3. Activate the virtual environment:
+```bash
+source .venv/bin/activate
+```
+
+4. Install the tool system-wide (optional):
+```bash
+make update
 ```
 
 This will:
@@ -47,10 +59,20 @@ This will:
 
 ### Development Installation
 
-For development work:
+For development work, use the virtual environment:
 ```bash
+# First time setup
+./setup_dev.sh
+
+# Subsequent development sessions
+source .venv/bin/activate
 make install-dev
 ```
+
+This will:
+- Create a Python virtual environment in `.venv`
+- Install all development dependencies
+- Install the package in editable mode
 
 ## Usage
 
@@ -115,7 +137,34 @@ dartindex/
 ├── setup.py            # Package configuration
 ├── requirements.txt    # Python dependencies
 ├── build_tools.py      # Tool build script
+├── .venv/              # Virtual environment
 └── Makefile           # Build automation
+```
+
+### Virtual Environment
+
+The project uses a Python virtual environment to manage dependencies. The virtual environment is created in the `.venv` directory.
+
+To set up the development environment:
+```bash
+./setup_dev.sh
+```
+
+To activate the virtual environment in a new terminal:
+```bash
+source .venv/bin/activate
+```
+
+To deactivate the virtual environment:
+```bash
+deactivate
+```
+
+### Installing Dependencies
+
+All project dependencies are listed in `requirements.txt`. After activating the virtual environment, you can install them with:
+```bash
+pip install -r requirements.txt
 ```
 
 ### Make Commands
@@ -150,6 +199,24 @@ Key features of the implementation:
 - Comprehensive error handling
 - Clear separation of concerns
 - Modular and testable design
+
+## Troubleshooting
+
+### Common Issues
+
+1. **ImportError: cannot import name 'runtime_version' from 'google.protobuf'**
+   - This error occurs when using an incompatible protobuf version
+   - Solution: Upgrade protobuf to version 5.29.1 or higher:
+     ```bash
+     pip install --upgrade "protobuf>=5.29.1"
+     ```
+
+2. **Permission warnings during installation**
+   - If you see pip cache permission warnings during installation
+   - Solution: Use `sudo -H` when running make commands:
+     ```bash
+     sudo -H make update
+     ```
 
 ## License
 
