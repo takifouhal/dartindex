@@ -144,7 +144,13 @@ class ScipToSourcetrail:
             if name.startswith("`") and name.endswith("`"):
                 name = name[1:-1]  # Remove backticks
             if "#" in name:
-                name = name.split("#")[0]  # Remove Dart-specific suffixes
+                base_name = name.split("#")[0]  # Remove Dart-specific suffixes
+                # Keep getter/setter info if present
+                if "<get>" in name or "<set>" in name:
+                    accessor = name[name.index("<"):name.index(">") + 1]
+                    name = f"{base_name}{accessor}"
+                else:
+                    name = base_name
 
             # Skip empty names
             if not name:
@@ -221,8 +227,53 @@ class ScipToSourcetrail:
                         symbol_id = self.db.record_field(name=name, parent_id=test_namespace_id)
                     else:
                         self.missing_parent_symbols += 1
+            elif kind == "Field" or kind == "Property":
+                # Handle getters and setters
+                is_accessor = "<get>" in name or "<set>" in name
+                if is_accessor:
+                    base_name = name[:name.index("<")]
+                else:
+                    base_name = name
+
+                if parent_id:
+                    symbol_id = self.db.record_field(name=base_name, parent_id=parent_id)
+                    if is_accessor:
+                        # Record accessor as a method
+                        accessor_id = self.db.record_method(name=name, parent_id=parent_id)
+                        if accessor_id:
+                            # Link accessor to field
+                            self.db.record_ref_usage(accessor_id, symbol_id)
+                else:
+                    if is_test_related and test_namespace_id:
+                        symbol_id = self.db.record_field(name=base_name, parent_id=test_namespace_id)
+                    else:
+                        self.missing_parent_symbols += 1
+                        symbol_id = self.db.record_global_variable(name=base_name)
+            elif kind == "Enum":
+                # Create namespace for enum
+                enum_namespace_id = self.db.record_namespace(name=name)
+                if enum_namespace_id:
+                    # Record the enum itself
+                    symbol_id = self.db.record_enum(name=name)
+                    if symbol_id:
+                        # Link enum to its namespace
+                        self.db.record_ref_usage(symbol_id, enum_namespace_id)
+                        if is_test_related and test_namespace_id:
+                            self.db.record_ref_usage(symbol_id, test_namespace_id)
+            elif kind == "EnumConstant":
+                if parent_id:
+                    symbol_id = self.db.record_enum_constant(name=name, parent_id=parent_id)
+                else:
+                    # Try to find enum by name
+                    enum_name = parent_symbol.split("/")[-1].split("#")[0]
+                    enum_id = self._find_enum_by_name(enum_name)
+                    if enum_id:
+                        symbol_id = self.db.record_enum_constant(name=name, parent_id=enum_id)
+                    elif is_test_related and test_namespace_id:
+                        symbol_id = self.db.record_enum_constant(name=name, parent_id=test_namespace_id)
+                    else:
+                        self.missing_parent_symbols += 1
             elif kind == "TypeParameter":
-                # For type parameters, attach them to their enclosing type
                 if parent_id:
                     symbol_id = self.db.record_type_parameter_node(name=name, parent_id=parent_id)
                 else:
@@ -318,6 +369,24 @@ class ScipToSourcetrail:
         for symbol_path, symbol_id in self.symbol_id_map.items():
             path_parts = symbol_path.split("/")
             if path_parts and class_name in path_parts[-1]:
+                return symbol_id
+
+        return None
+
+    def _find_enum_by_name(self, enum_name: str) -> Optional[int]:
+        """Find an enum ID by its name."""
+        # Remove any Dart-specific suffixes
+        if "#" in enum_name:
+            enum_name = enum_name.split("#")[0]
+        if enum_name.endswith("."):
+            enum_name = enum_name[:-1]
+        if enum_name.startswith("`") and enum_name.endswith("`"):
+            enum_name = enum_name[1:-1]
+
+        # Look through all symbols for matching enum name
+        for symbol_path, symbol_id in self.symbol_id_map.items():
+            path_parts = symbol_path.split("/")
+            if path_parts and enum_name in path_parts[-1]:
                 return symbol_id
 
         return None
