@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+"""
+Build script for compiling and packaging native tools.
+Handles downloading and building SCIP and SCIP-Dart tools.
+"""
 
 import os
 import subprocess
@@ -6,10 +10,28 @@ import shutil
 import tempfile
 import json
 from pathlib import Path
+from typing import Dict, Any, Optional, List, Union
 import requests
 
-def run_command(cmd, cwd=None, env=None):
-    """Run a command with proper error handling."""
+def run_command(
+    cmd: List[str],
+    cwd: Optional[str] = None,
+    env: Optional[Dict[str, str]] = None
+) -> subprocess.CompletedProcess:
+    """
+    Run a command with proper error handling.
+    
+    Args:
+        cmd: Command to run as list of strings
+        cwd: Working directory for the command
+        env: Environment variables for the command
+        
+    Returns:
+        CompletedProcess: Result of the command
+        
+    Raises:
+        subprocess.CalledProcessError: If command fails
+    """
     try:
         env = env or os.environ.copy()
         result = subprocess.run(
@@ -30,8 +52,19 @@ def run_command(cmd, cwd=None, env=None):
         print(f"stderr: {e.stderr}")
         raise
 
-def get_download_url(repo_url):
-    """Get the download URL for a GitHub repository."""
+def get_download_url(repo_url: str) -> str:
+    """
+    Get the download URL for a GitHub repository.
+    
+    Args:
+        repo_url: GitHub repository URL
+        
+    Returns:
+        str: URL to download the repository tarball
+        
+    Raises:
+        requests.exceptions.RequestException: If API request fails
+    """
     # Extract owner and repo from the URL
     if repo_url.endswith('.git'):
         repo_url = repo_url[:-4]
@@ -50,11 +83,20 @@ def get_download_url(repo_url):
     print(f"Default branch is: {default_branch}")
     
     # Return the tarball URL
-    tarball_url = f"https://github.com/{owner}/{repo}/archive/{default_branch}.tar.gz"
-    return tarball_url
+    return f"https://github.com/{owner}/{repo}/archive/{default_branch}.tar.gz"
 
-def download_repo(url, target_dir):
-    """Download a repository using HTTPS."""
+def download_repo(url: str, target_dir: str) -> None:
+    """
+    Download a repository using HTTPS.
+    
+    Args:
+        url: Repository URL
+        target_dir: Directory to download to
+        
+    Raises:
+        requests.exceptions.RequestException: If download fails
+        Exception: If extraction or processing fails
+    """
     print(f"Downloading {url}...")
     
     try:
@@ -86,10 +128,15 @@ def download_repo(url, target_dir):
             contents = os.listdir(extract_dir)
             print(f"Directory contents: {contents}")
             
-            # Find the extracted directory - it should be the only directory
-            extracted_dirs = [d for d in contents if os.path.isdir(os.path.join(extract_dir, d))]
+            # Find the extracted directory
+            extracted_dirs = [
+                d for d in contents
+                if os.path.isdir(os.path.join(extract_dir, d))
+            ]
             if len(extracted_dirs) != 1:
-                raise Exception(f"Expected exactly one extracted directory, found: {extracted_dirs}")
+                raise Exception(
+                    f"Expected exactly one extracted directory, found: {extracted_dirs}"
+                )
             
             extracted_dir = extracted_dirs[0]
             print(f"Found extracted directory: {extracted_dir}")
@@ -115,7 +162,103 @@ def download_repo(url, target_dir):
         print(f"Error processing repository: {str(e)}")
         raise
 
-def build_tools():
+def build_scip_dart(temp_dir: str, dart_tools_dir: Path) -> None:
+    """
+    Build SCIP-Dart tool.
+    
+    Args:
+        temp_dir: Temporary directory for building
+        dart_tools_dir: Directory to place the built binary
+    """
+    try:
+        # Download SCIP-Dart
+        scip_dart_url = "https://github.com/Workiva/scip-dart.git"
+        scip_dart_dir = os.path.join(temp_dir, "scip-dart")
+        download_repo(scip_dart_url, scip_dart_dir)
+        
+        # Create pubspec.lock with correct format
+        pubspec_lock = {
+            "packages": {
+                "watcher": {
+                    "dependency": "direct main",
+                    "description": {
+                        "name": "watcher",
+                        "sha256": "3d2ad6751b3c16cf07c7753bd163639c5420178cd8ab0b4f3714d71968480485",
+                        "url": "https://pub.dev"
+                    },
+                    "source": "hosted",
+                    "version": "1.1.0"
+                }
+            },
+            "sdks": {
+                "dart": ">=2.19.0 <4.0.0"
+            }
+        }
+        with open(os.path.join(scip_dart_dir, "pubspec.lock"), "w") as f:
+            json.dump(pubspec_lock, f, indent=2)
+        
+        # Build SCIP-Dart
+        print("Running dart pub get...")
+        env = os.environ.copy()
+        env["PUB_CACHE"] = os.path.join(temp_dir, ".pub-cache")  # Use local pub cache
+        run_command(["dart", "pub", "get"], cwd=scip_dart_dir, env=env)
+        
+        print("Compiling scip_dart...")
+        run_command(
+            ["dart", "compile", "exe", "--output=scip_dart", "bin/scip_dart.dart"],
+            cwd=scip_dart_dir,
+            env=env
+        )
+        
+        # Copy the built binary
+        print("Copying scip_dart binary...")
+        binary_path = os.path.join(scip_dart_dir, "scip_dart")
+        if not os.path.exists(binary_path):
+            raise Exception(f"Binary not found at {binary_path}")
+        
+        # Copy the binary and set permissions
+        target_path = dart_tools_dir / "scip_dart"
+        shutil.copy2(binary_path, target_path)
+        os.chmod(target_path, 0o755)
+        
+    except Exception as e:
+        print(f"Error building SCIP-Dart: {str(e)}")
+        raise
+
+def build_scip(temp_dir: str, go_tools_dir: Path) -> None:
+    """
+    Build SCIP tool.
+    
+    Args:
+        temp_dir: Temporary directory for building
+        go_tools_dir: Directory to place the built binary
+    """
+    try:
+        # Download SCIP
+        scip_url = "https://github.com/sourcegraph/scip.git"
+        scip_dir = os.path.join(temp_dir, "scip")
+        download_repo(scip_url, scip_dir)
+        
+        # Build SCIP
+        print("Building SCIP binary...")
+        run_command(
+            ["go", "build", "-o", "scip", "./cmd/scip"],
+            cwd=scip_dir
+        )
+        
+        # Copy the binary and set permissions
+        target_path = go_tools_dir / "scip"
+        shutil.copy2(
+            os.path.join(scip_dir, "scip"),
+            target_path
+        )
+        os.chmod(target_path, 0o755)
+        
+    except Exception as e:
+        print(f"Error building SCIP: {str(e)}")
+        raise
+
+def build_tools() -> None:
     """Build SCIP and SCIP-Dart tools during package build."""
     tools_dir = Path("cli/tools")
     dart_tools_dir = tools_dir / "dart"
@@ -124,88 +267,12 @@ def build_tools():
     # Build SCIP-Dart
     print("Building SCIP-Dart...")
     with tempfile.TemporaryDirectory() as temp_dir:
-        try:
-            # Download SCIP-Dart
-            scip_dart_url = "https://github.com/Workiva/scip-dart.git"
-            scip_dart_dir = os.path.join(temp_dir, "scip-dart")
-            download_repo(scip_dart_url, scip_dart_dir)
-            
-            # Create pubspec.lock with correct format
-            pubspec_lock = {
-                "packages": {
-                    "watcher": {
-                        "dependency": "direct main",
-                        "description": {
-                            "name": "watcher",
-                            "sha256": "3d2ad6751b3c16cf07c7753bd163639c5420178cd8ab0b4f3714d71968480485",
-                            "url": "https://pub.dev"
-                        },
-                        "source": "hosted",
-                        "version": "1.1.0"
-                    }
-                },
-                "sdks": {
-                    "dart": ">=2.19.0 <4.0.0"
-                }
-            }
-            with open(os.path.join(scip_dart_dir, "pubspec.lock"), "w") as f:
-                json.dump(pubspec_lock, f, indent=2)
-            
-            # Build SCIP-Dart
-            print("Running dart pub get...")
-            env = os.environ.copy()
-            env["PUB_CACHE"] = os.path.join(temp_dir, ".pub-cache")  # Use local pub cache
-            run_command(["dart", "pub", "get"], cwd=scip_dart_dir, env=env)
-            
-            print("Compiling scip_dart...")
-            run_command(
-                ["dart", "compile", "exe", "--output=scip_dart", "bin/scip_dart.dart"],
-                cwd=scip_dart_dir,
-                env=env
-            )
-            
-            # Copy the built binary
-            print("Copying scip_dart binary...")
-            binary_path = os.path.join(scip_dart_dir, "scip_dart")
-            if not os.path.exists(binary_path):
-                raise Exception(f"Binary not found at {binary_path}")
-            
-            # Copy the binary and set permissions
-            target_path = dart_tools_dir / "scip_dart"
-            shutil.copy2(binary_path, target_path)
-            os.chmod(target_path, 0o755)
-            
-        except Exception as e:
-            print(f"Error building SCIP-Dart: {str(e)}")
-            raise
+        build_scip_dart(temp_dir, dart_tools_dir)
     
     # Build SCIP
     print("\nBuilding SCIP...")
     with tempfile.TemporaryDirectory() as temp_dir:
-        try:
-            # Download SCIP
-            scip_url = "https://github.com/sourcegraph/scip.git"
-            scip_dir = os.path.join(temp_dir, "scip")
-            download_repo(scip_url, scip_dir)
-            
-            # Build SCIP
-            print("Building SCIP binary...")
-            run_command(
-                ["go", "build", "-o", "scip", "./cmd/scip"],
-                cwd=scip_dir
-            )
-            
-            # Copy the binary and set permissions
-            target_path = go_tools_dir / "scip"
-            shutil.copy2(
-                os.path.join(scip_dir, "scip"),
-                target_path
-            )
-            os.chmod(target_path, 0o755)
-            
-        except Exception as e:
-            print(f"Error building SCIP: {str(e)}")
-            raise
+        build_scip(temp_dir, go_tools_dir)
 
     print("\nBuild completed successfully!")
 

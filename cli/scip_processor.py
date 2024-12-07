@@ -4,16 +4,15 @@ This module handles the processing and formatting of SCIP index data.
 """
 
 import json
+from typing import List, Dict, Any, Union
 from google.protobuf import text_format
 from google.protobuf.json_format import MessageToDict
 from cli import scip_pb2
 
 class SCIPProcessor:
-    def __init__(self):
-        """Initialize the SCIP processor."""
-        pass
-
-    def process_data(self, scip_data, format_type="json", symbols_only=False):
+    """Processes SCIP (Source Code Intelligence Protocol) index data."""
+    
+    def process_data(self, scip_data: bytes, format_type: str = "json", symbols_only: bool = False) -> str:
         """
         Process SCIP binary data into the requested format.
         
@@ -31,47 +30,68 @@ class SCIPProcessor:
         
         if symbols_only:
             return self._format_symbols(index, format_type)
-        elif format_type == "json":
-            return self._format_json(index)
-        elif format_type == "text":
-            return text_format.MessageToString(index, as_utf8=True)
-        else:
-            return self._format_summary(index)
+        
+        format_handlers = {
+            "json": self._format_json,
+            "text": lambda idx: text_format.MessageToString(idx, as_utf8=True),
+            "summary": self._format_summary
+        }
+        
+        return format_handlers[format_type](index)
 
-    def _format_symbols(self, index, format_type):
-        """Format symbol information."""
-        symbols = []
-        for doc in index.documents:
-            for symbol in doc.symbols:
-                symbols.append({
-                    'symbol': symbol.symbol,
-                    'kind': scip_pb2.SymbolInformation.Kind.Name(symbol.kind),
-                    'display_name': symbol.display_name,
-                    'documentation': symbol.documentation,
-                    'language': doc.language,
-                    'relationships': len(symbol.relationships)
-                })
+    def _format_symbols(self, index: scip_pb2.Index, format_type: str) -> str:
+        """
+        Format symbol information.
+        
+        Args:
+            index: SCIP index
+            format_type: Output format (json or text)
+            
+        Returns:
+            str: Formatted symbol information
+        """
+        symbols = [
+            {
+                'symbol': symbol.symbol,
+                'kind': scip_pb2.SymbolInformation.Kind.Name(symbol.kind),
+                'display_name': symbol.display_name,
+                'documentation': symbol.documentation,
+                'language': doc.language,
+                'relationships': len(symbol.relationships)
+            }
+            for doc in index.documents
+            for symbol in doc.symbols
+        ]
         
         if format_type == "json":
             return json.dumps(symbols, indent=2)
-        else:
-            output = []
-            for symbol in symbols:
-                output.extend([
-                    f"\nSymbol: {symbol['symbol']}",
-                    f"Kind: {symbol['kind']}",
-                    f"Display Name: {symbol['display_name']}",
-                    f"Language: {symbol['language']}",
-                    f"Relationships: {symbol['relationships']}"
-                ])
-                if symbol['documentation']:
-                    output.append("Documentation:")
-                    for doc in symbol['documentation']:
-                        output.append(f"  {doc}")
-            return "\n".join(output)
+        
+        # Format as text
+        lines = []
+        for symbol in symbols:
+            lines.extend([
+                f"\nSymbol: {symbol['symbol']}",
+                f"Kind: {symbol['kind']}",
+                f"Display Name: {symbol['display_name']}",
+                f"Language: {symbol['language']}",
+                f"Relationships: {symbol['relationships']}"
+            ])
+            if symbol['documentation']:
+                lines.append("Documentation:")
+                lines.extend(f"  {doc}" for doc in symbol['documentation'])
+        
+        return "\n".join(lines)
 
-    def _format_json(self, index):
-        """Format full index as JSON."""
+    def _format_json(self, index: scip_pb2.Index) -> str:
+        """
+        Format full index as JSON.
+        
+        Args:
+            index: SCIP index
+            
+        Returns:
+            str: JSON-formatted index data
+        """
         data = MessageToDict(
             index,
             preserving_proto_field_name=True,
@@ -81,9 +101,17 @@ class SCIPProcessor:
         )
         return json.dumps(data, indent=2)
 
-    def _format_summary(self, index):
-        """Format index summary."""
-        output = [
+    def _format_summary(self, index: scip_pb2.Index) -> str:
+        """
+        Format index summary.
+        
+        Args:
+            index: SCIP index
+            
+        Returns:
+            str: Summary of the index
+        """
+        lines = [
             f"SCIP Index Summary:",
             f"Project root: {index.metadata.project_root}",
             f"Tool: {index.metadata.tool_info.name} {index.metadata.tool_info.version}",
@@ -93,10 +121,10 @@ class SCIPProcessor:
         ]
         
         for doc in index.documents:
-            output.extend([
+            lines.extend([
                 f"- {doc.relative_path} ({doc.language})",
                 f"  Symbols: {len(doc.symbols)}",
                 f"  Occurrences: {len(doc.occurrences)}"
             ])
         
-        return "\n".join(output) 
+        return "\n".join(lines) 
