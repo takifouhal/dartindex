@@ -41,7 +41,19 @@ def cli() -> None:
     default=None,
     help='Path for the Sourcetrail database (default: <project_name>.srctrldb in project directory)'
 )
-def index(project_path: str, sourcetrail_db: Optional[str] = None) -> None:
+@click.option(
+    '--format',
+    'output_format',
+    type=click.Choice(['json', 'text', 'summary', 'sourcetrail']),
+    default='sourcetrail',
+    help='Output format (json, text, summary, or sourcetrail)'
+)
+@click.option(
+    '--symbols-only',
+    is_flag=True,
+    help='Only show symbol information'
+)
+def index(project_path: str, sourcetrail_db: Optional[str] = None, output_format: str = 'sourcetrail', symbols_only: bool = False) -> None:
     """Index a Dart/Flutter project and generate a Sourcetrail database.
 
     Creates a Sourcetrail-compatible index of your project's codebase.
@@ -50,15 +62,9 @@ def index(project_path: str, sourcetrail_db: Optional[str] = None) -> None:
     Example:
         $ dartindex index .
         $ dartindex index /path/to/project -o custom.srctrldb
+        $ dartindex index . --format json --symbols-only  # Get JSON output of symbols
     """
     try:
-        # Determine database path if not provided
-        if sourcetrail_db is None:
-            project_name = Path(project_path).name
-            sourcetrail_db = str(Path(project_path) / f"{project_name}.srctrldb")
-
-        click.echo(f"Using database path: {sourcetrail_db}", err=True)
-
         # Initialize components
         indexer = DartIndexer()
         processor = SCIPProcessor()
@@ -68,15 +74,26 @@ def index(project_path: str, sourcetrail_db: Optional[str] = None) -> None:
         click.echo("This may take a few minutes for large projects...", err=True)
         scip_data = indexer.index_project(project_path)
         
-        # Convert SCIP to JSON format
-        click.echo("Converting SCIP to JSON...", err=True)
-        scip_json = processor.process_data(scip_data)
+        # Convert SCIP to requested format
+        click.echo(f"Converting SCIP to {output_format}...", err=True)
+        output = processor.process_data(scip_data, format_type=output_format, symbols_only=symbols_only)
         
-        # Parse JSON string back to dictionary
-        scip_dict = json.loads(scip_json)
-        
-        # Convert to Sourcetrail DB
+        # Print the output directly if not creating Sourcetrail DB
+        if output_format != 'sourcetrail':
+            click.echo(output)
+            return
+
+        # Only create Sourcetrail DB if no format specified
         click.echo("Creating Sourcetrail database...", err=True)
+        
+        # Determine database path if not provided
+        if sourcetrail_db is None:
+            project_name = Path(project_path).name
+            sourcetrail_db = str(Path(project_path) / f"{project_name}.srctrldb")
+        click.echo(f"Using database path: {sourcetrail_db}", err=True)
+        
+        # Parse JSON string back to dictionary and convert to Sourcetrail DB
+        scip_dict = json.loads(output)
         converter = ScipToSourcetrail(sourcetrail_db)
         converter.convert(scip_dict)
         
