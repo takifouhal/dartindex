@@ -196,7 +196,8 @@ class ScipToSourcetrail:
                             self.db.record_ref_type_usage(symbol_id, type_node_id)
                 else:
                     # Try to find the enclosing type by looking at the path
-                    enclosing_type = symbol_str.split("/")[-2] if len(symbol_str.split("/")) > 1 else None
+                    parent_path = "/".join(symbol_str.split("/")[:-1])
+                    enclosing_type = parent_path.split("/")[-1].split("#")[0]
                     if enclosing_type:
                         class_id = self._find_class_by_name(enclosing_type)
                         if class_id:
@@ -245,8 +246,9 @@ class ScipToSourcetrail:
                             self.missing_parent_symbols += 1
             elif kind == "Parameter":
                 # For constructor parameters, try to find the constructor's class
-                if "#<constructor>" in parent_symbol:
-                    class_path = parent_symbol.split("#<constructor>")[0]
+                parent_path = "/".join(symbol_str.split("/")[:-1])  # Get parent path
+                if "#<constructor>" in parent_path:
+                    class_path = parent_path.split("#<constructor>")[0]
                     class_id = self._find_class_by_path(class_path)
                     if class_id:
                         parent_id = class_id
@@ -259,7 +261,15 @@ class ScipToSourcetrail:
                     if local_symbol_id:
                         self.db.record_local_symbol_location(local_symbol_id, parent_id)
                 else:
-                    if is_test_related and test_namespace_id:
+                    # Try to find the method/constructor this parameter belongs to
+                    method_path = parent_path.split("(")[0] if "(" in parent_path else parent_path
+                    method_id = self.symbol_id_map.get(method_path)
+                    if method_id:
+                        symbol_id = self.db.record_field(name=name, parent_id=method_id)
+                        local_symbol_id = self.db.record_local_symbol()
+                        if local_symbol_id:
+                            self.db.record_local_symbol_location(local_symbol_id, method_id)
+                    elif is_test_related and test_namespace_id:
                         symbol_id = self.db.record_field(name=name, parent_id=test_namespace_id)
                     else:
                         self.missing_parent_symbols += 1
@@ -301,7 +311,8 @@ class ScipToSourcetrail:
                     symbol_id = self.db.record_enum_constant(name=name, parent_id=parent_id)
                 else:
                     # Try to find enum by name
-                    enum_name = parent_symbol.split("/")[-1].split("#")[0]
+                    parent_path = "/".join(symbol_str.split("/")[:-1])
+                    enum_name = parent_path.split("/")[-1].split("#")[0]
                     enum_id = self._find_enum_by_name(enum_name)
                     if enum_id:
                         symbol_id = self.db.record_enum_constant(name=name, parent_id=enum_id)
