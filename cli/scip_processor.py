@@ -21,82 +21,73 @@ class SCIPProcessor:
         self.symbol_id_map = {}  # Maps SCIP symbols to their Sourcetrail IDs
         self.class_id_map = {}  # Maps class paths to their Sourcetrail IDs
         
-        # Setup logging
-        logging.basicConfig(level=logging.DEBUG)
+        # Setup logging with more detailed format
+        logging.basicConfig(
+            level=logging.INFO,
+            format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+        )
         self.logger = logging.getLogger("SCIPProcessor")
         
     def process_data(self, scip_data: bytes, db_path: Optional[Path] = None, format_type: str = "sourcetrail", symbols_only: bool = False) -> Optional[str]:
-        """
-        Process SCIP binary data into the requested format.
-        
-        Args:
-            scip_data: Raw SCIP binary data
-            db_path: Path to the Sourcetrail database (required for sourcetrail format)
-            format_type: Output format (sourcetrail, json, text, or summary)
-            symbols_only: If True, only process symbols without relationships
+        """Process SCIP binary data into the requested format."""
+        try:
+            # Parse the SCIP data
+            index = scip_pb2.Index()
+            index.ParseFromString(scip_data)
             
-        Returns:
-            Optional[str]: Formatted output for non-sourcetrail formats, None for sourcetrail
+            self.logger.info(f"Processing SCIP data for project: {index.metadata.project_root}")
+            self.logger.info(f"Tool info: {index.metadata.tool_info.name} {index.metadata.tool_info.version}")
+            self.logger.info(f"Format type: {format_type}")
             
-        Raises:
-            ValueError: If db_path is not provided for sourcetrail format
-        """
-        # Parse the SCIP data
-        index = scip_pb2.Index()
-        index.ParseFromString(scip_data)
-        
-        # Debug log the SCIP structure
-        self.logger.debug("SCIP Index Structure:")
-        self.logger.debug(f"Project root: {index.metadata.project_root}")
-        self.logger.debug(f"Tool info: {index.metadata.tool_info.name} {index.metadata.tool_info.version}")
-        
-        # Log first document and symbol for inspection
-        if index.documents:
-            doc = index.documents[0]
-            self.logger.debug("\nFirst Document:")
-            self.logger.debug(f"Path: {doc.relative_path}")
-            self.logger.debug(f"Language: {doc.language}")
-            
-            if doc.symbols:
-                symbol = doc.symbols[0]
-                self.logger.debug("\nFirst Symbol:")
-                self.logger.debug(f"Symbol: {symbol.symbol}")
-                self.logger.debug(f"Display name: {symbol.display_name if hasattr(symbol, 'display_name') else 'N/A'}")
-                self.logger.debug(f"Kind: {scip_pb2.SymbolInformation.Kind.Name(symbol.kind)}")
-                self.logger.debug(f"Properties: {dir(symbol)}")
-        
-        if format_type == "sourcetrail":
-            if db_path is None:
-                raise ValueError("db_path is required for sourcetrail format")
-            self._process_to_sourcetrail(index, db_path, symbols_only)
-            return None
-        else:
-            format_handlers = {
-                "json": self._format_json,
-                "text": lambda idx: text_format.MessageToString(idx, as_utf8=True),
-                "summary": self._format_summary
-            }
-            return format_handlers[format_type](index)
+            if format_type == "sourcetrail":
+                if db_path is None:
+                    raise ValueError("db_path is required for sourcetrail format")
+                self._process_to_sourcetrail(index, db_path, symbols_only)
+                return None
+            else:
+                format_handlers = {
+                    "json": self._format_json,
+                    "text": lambda idx: text_format.MessageToString(idx, as_utf8=True),
+                    "summary": self._format_summary
+                }
+                if format_type not in format_handlers:
+                    raise ValueError(f"Unsupported format type: {format_type}")
+                return format_handlers[format_type](index)
+                
+        except Exception as e:
+            self.logger.error(f"Failed to process SCIP data: {str(e)}", exc_info=True)
+            raise
 
     def _process_to_sourcetrail(self, index: scip_pb2.Index, db_path: Path, symbols_only: bool = False) -> None:
         """Convert SCIP index to Sourcetrail database."""
+        self.logger.info(f"Processing to Sourcetrail database at: {db_path}")
         self.db = SourcetrailDB.open(db_path, clear=True)
         
         try:
+            doc_count = len(index.documents)
+            self.logger.info(f"Processing {doc_count} documents")
+            
             # Process files first
             self._process_documents(index.documents)
+            self.logger.info(f"Processed {len(self.file_id_map)} files")
             
             # Process symbols and their relationships
             self._process_symbols(index.documents)
+            self.logger.info(f"Processed {len(self.symbol_id_map)} symbols")
             
             # Process occurrences and locations if not symbols_only
             if not symbols_only:
                 self._process_occurrences(index.documents)
             
             self.db.commit()
+            self.logger.info("Successfully committed all changes to database")
             
+        except Exception as e:
+            self.logger.error(f"Failed to process to Sourcetrail: {str(e)}", exc_info=True)
+            raise
         finally:
             self.db.close()
+            self.logger.info("Database connection closed")
 
     def _process_documents(self, documents: List[scip_pb2.Document]) -> None:
         """Record source files in the database."""
@@ -126,49 +117,38 @@ class SCIPProcessor:
             for symbol in doc.symbols:
                 symbol_id = self._record_symbol(symbol)
                 
-                # Store relationships for second pass
+                # Process relationships
                 if hasattr(symbol, 'relationships'):
                     for rel in symbol.relationships:
-                        target_symbol = rel.symbol
-                        if target_symbol in self.symbol_id_map:
-                            target_id = self.symbol_id_map[target_symbol]
-                            
-                            # Map relationship types
-                            if rel.is_reference:
-                                self.db.record_ref_usage(symbol_id, target_id)
-                            if rel.is_implementation:
-                                self.db.record_ref_override(symbol_id, target_id)
-                            if rel.is_type_definition:
-                                self.db.record_ref_type_usage(symbol_id, target_id)
-                            if rel.is_import:
-                                self.db.record_ref_import(symbol_id, target_id)
-                
-            # Second pass: Process occurrences for additional relationships
+                        self._process_relationship(symbol_id, rel)
+            
+            # Process occurrences
             for occurrence in doc.occurrences:
                 if occurrence.symbol in self.symbol_id_map:
-                    symbol_id = self.symbol_id_map[occurrence.symbol]
-                    roles = occurrence.symbol_roles
-                    
-                    # Handle symbol roles
-                    if roles & 0x1:  # Definition
-                        self._handle_definition(occurrence, symbol_id)
-                    if roles & 0x2:  # Import
-                        self._handle_import(occurrence, symbol_id)
-                    if roles & 0x4:  # WriteAccess
-                        self._handle_write_access(occurrence, symbol_id)
-                    if roles & 0x8:  # ReadAccess
-                        self._handle_read_access(occurrence, symbol_id)
-                    if roles & 0x10:  # Container
-                        self._handle_container(occurrence, symbol_id)
-                    if roles & 0x20:  # Type
-                        self._handle_type_usage(occurrence, symbol_id)
+                    self._process_occurrence(occurrence, self.symbol_id_map[occurrence.symbol])
 
-    def _handle_definition(self, occurrence: scip_pb2.Occurrence, symbol_id: int) -> None:
-        """Handle symbol definition."""
-        # Get document path from occurrence
+    def _process_relationship(self, symbol_id: int, rel) -> None:
+        """Process a single relationship between symbols."""
+        if rel.symbol not in self.symbol_id_map:
+            return
+            
+        target_id = self.symbol_id_map[rel.symbol]
+        relationship_map = {
+            'is_reference': self.db.record_ref_usage,
+            'is_implementation': self.db.record_ref_override,
+            'is_type_definition': self.db.record_ref_type_usage,
+            'is_import': self.db.record_ref_import
+        }
+        
+        for rel_type, record_func in relationship_map.items():
+            if getattr(rel, rel_type, False):
+                record_func(symbol_id, target_id)
+
+    def _get_location_info(self, occurrence: scip_pb2.Occurrence) -> Optional[tuple]:
+        """Extract location information from an occurrence."""
         doc_path = occurrence.document_id if hasattr(occurrence, 'document_id') else None
         if not doc_path or doc_path not in self.file_id_map:
-            return  # Skip if we can't find the document
+            return None
             
         file_id = self.file_id_map[doc_path]
         start_line = occurrence.range[0] + 1
@@ -176,17 +156,25 @@ class SCIPProcessor:
         end_line = occurrence.range[2] + 1 if len(occurrence.range) > 3 else start_line
         end_col = occurrence.range[3] + 1 if len(occurrence.range) > 3 else occurrence.range[2] + 1
         
+        return (file_id, start_line, start_col, end_line, end_col)
+
+    def _handle_definition(self, occurrence: scip_pb2.Occurrence, symbol_id: int) -> None:
+        """Handle symbol definition."""
+        loc_info = self._get_location_info(occurrence)
+        if not loc_info:
+            return
+            
         try:
             self.db.record_symbol_location(
                 symbol_id=symbol_id,
-                file_id=file_id,
-                start_line=start_line,
-                start_column=start_col,
-                end_line=end_line,
-                end_column=end_col
+                file_id=loc_info[0],
+                start_line=loc_info[1],
+                start_column=loc_info[2],
+                end_line=loc_info[3],
+                end_column=loc_info[4]
             )
         except Exception as e:
-            print(f"Warning: Failed to record symbol location: {str(e)}")
+            self.logger.warning(f"Failed to record symbol location: {str(e)}")
 
     def _handle_import(self, occurrence: scip_pb2.Occurrence, symbol_id: int) -> None:
         """Handle symbol import."""
@@ -210,33 +198,36 @@ class SCIPProcessor:
             if occurrence.symbol in self.symbol_id_map:
                 target_id = self.symbol_id_map[occurrence.symbol]
                 self.db.record_ref_call(symbol_id, target_id)
+                
+                # Record call location
+                self.db.record_reference_location(
+                    symbol_id,
+                    file_id,
+                    start_line + 1,
+                    start_col + 1,
+                    end_line + 1,
+                    end_col + 1
+                )
         else:
             self.db.record_ref_usage(symbol_id, symbol_id)
 
     def _handle_container(self, occurrence: scip_pb2.Occurrence, symbol_id: int) -> None:
         """Handle container symbol (class, interface, etc)."""
-        # Get document path from occurrence
-        doc_path = occurrence.document_id if hasattr(occurrence, 'document_id') else None
-        if not doc_path or doc_path not in self.file_id_map:
-            return  # Skip if we can't find the document
+        loc_info = self._get_location_info(occurrence)
+        if not loc_info:
+            return
             
-        file_id = self.file_id_map[doc_path]
-        start_line = occurrence.range[0] + 1
-        start_col = 1  # Container scope starts at beginning of line
-        end_line = occurrence.range[2] + 1 if len(occurrence.range) > 3 else start_line
-        end_col = occurrence.range[3] + 1 if len(occurrence.range) > 3 else occurrence.range[2] + 1
-        
         try:
             self.db.record_symbol_scope_location(
                 symbol_id=symbol_id,
-                file_id=file_id,
-                start_line=start_line,
-                start_column=start_col,
-                end_line=end_line,
-                end_column=end_col
+                file_id=loc_info[0],
+                start_line=loc_info[1],
+                start_column=1,  # Container scope starts at beginning of line
+                end_line=loc_info[3],
+                end_column=loc_info[4]
             )
         except Exception as e:
-            print(f"Warning: Failed to record scope location: {str(e)}")
+            self.logger.warning(f"Failed to record scope location: {str(e)}")
 
     def _handle_type_usage(self, occurrence: scip_pb2.Occurrence, symbol_id: int) -> None:
         """Handle type usage."""
@@ -632,3 +623,22 @@ class SCIPProcessor:
             ])
         
         return "\n".join(lines) 
+
+    def _process_occurrence(self, occurrence: scip_pb2.Occurrence, symbol_id: int) -> None:
+        """Process a single occurrence with its roles."""
+        roles = occurrence.symbol_roles
+        role_handlers = {
+            0x1: ('Definition', self._handle_definition),
+            0x2: ('Import', self._handle_import),
+            0x4: ('WriteAccess', self._handle_write_access),
+            0x8: ('ReadAccess', self._handle_read_access),
+            0x10: ('Container', self._handle_container),
+            0x20: ('Type', self._handle_type_usage)
+        }
+        
+        for role_bit, (role_name, handler) in role_handlers.items():
+            if roles & role_bit:
+                try:
+                    handler(occurrence, symbol_id)
+                except Exception as e:
+                    self.logger.warning(f"Failed to handle {role_name} for symbol {occurrence.symbol}: {str(e)}")
