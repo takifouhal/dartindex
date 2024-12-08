@@ -78,35 +78,20 @@ def index(project_path: str, sourcetrail_db: Optional[str] = None, output_format
         click.echo(f"\nConverting SCIP to {output_format}...", err=True)
         
         # Process the SCIP data
-        processed_output = processor.process_data(scip_data, format_type=output_format, symbols_only=symbols_only)
-        
-        # Handle different output formats
-        if output_format != 'sourcetrail':
-            click.echo(processed_output)
-            return
-
-        # Determine database path if not provided
-        if sourcetrail_db is None:
-            project_name = Path(project_path).name
-            sourcetrail_db = str(Path(project_path) / f"{project_name}.srctrldb")
-        
-        click.echo(f"Creating Sourcetrail database at: {sourcetrail_db}", err=True)
-        
-        try:
-            # Parse JSON string back to dictionary
-            scip_dict = json.loads(processed_output)
+        if output_format == 'sourcetrail':
+            # Determine database path if not provided
+            if sourcetrail_db is None:
+                project_name = Path(project_path).name
+                sourcetrail_db = str(Path(project_path) / f"{project_name}.srctrldb")
             
-            # Create and convert to Sourcetrail DB
-            converter = ScipToSourcetrail(sourcetrail_db)
-            converter.convert(scip_dict)
-            
+            click.echo(f"Creating Sourcetrail database at: {sourcetrail_db}", err=True)
+            processor.process_data(scip_data, db_path=Path(sourcetrail_db), format_type='sourcetrail', symbols_only=symbols_only)
             click.echo(f"\nSuccess! 🎉 Sourcetrail database created at: {sourcetrail_db}", err=True)
             click.echo("\nYou can now open this database with Sourcetrail to explore your project.", err=True)
-            
-        except json.JSONDecodeError as je:
-            raise click.ClickException(f"Failed to parse SCIP data: {str(je)}")
-        except Exception as e:
-            raise click.ClickException(f"Failed to create Sourcetrail database: {str(e)}")
+        else:
+            # Handle other output formats
+            processed_output = processor.process_data(scip_data, format_type=output_format, symbols_only=symbols_only)
+            click.echo(processed_output)
         
     except Exception as e:
         click.echo("\n❌ Error occurred:", err=True)
