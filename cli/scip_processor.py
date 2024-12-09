@@ -20,6 +20,9 @@ class SCIPProcessor:
         self.file_id_map = {}  # Maps file paths to their Sourcetrail IDs
         self.symbol_id_map = {}  # Maps SCIP symbols to their Sourcetrail IDs
         self.class_id_map = {}  # Maps class paths to their Sourcetrail IDs
+        self.enclosing_symbol_stack = {}  # Maps file_id to a stack of currently active symbols
+        self.symbol_kind_map = {}  # Maps symbols to their kinds
+        self.method_like_kinds = {"Function", "Method", "Constructor"}  # Kinds considered as callable methods
         
         # Setup logging with more detailed format
         logging.basicConfig(
@@ -86,6 +89,9 @@ class SCIPProcessor:
             self.logger.error(f"Failed to process to Sourcetrail: {str(e)}", exc_info=True)
             raise
         finally:
+            # Clean up
+            self.enclosing_symbol_stack.clear()
+            self.symbol_kind_map.clear()
             self.db.close()
             self.logger.info("Database connection closed")
 
@@ -195,6 +201,12 @@ class SCIPProcessor:
 
     def _handle_read_access(self, occurrence: scip_pb2.Occurrence, symbol_id: int) -> None:
         """Handle read access to symbol."""
+        loc_info = self._get_location_info(occurrence)
+        if not loc_info:
+            return
+            
+        file_id, start_line, start_col, end_line, end_col = loc_info
+        
         # Record usage and potential method call
         if "#" in occurrence.symbol and (
             occurrence.symbol.endswith("().") or 
@@ -208,13 +220,21 @@ class SCIPProcessor:
                 self.db.record_reference_location(
                     symbol_id,
                     file_id,
-                    start_line + 1,
-                    start_col + 1,
-                    end_line + 1,
-                    end_col + 1
+                    start_line,
+                    start_col,
+                    end_line,
+                    end_col
                 )
         else:
             self.db.record_ref_usage(symbol_id, symbol_id)
+            self.db.record_reference_location(
+                symbol_id,
+                file_id,
+                start_line,
+                start_col,
+                end_line,
+                end_col
+            )
 
     def _handle_container(self, occurrence: scip_pb2.Occurrence, symbol_id: int) -> None:
         """Handle container symbol (class, interface, etc)."""
@@ -315,7 +335,11 @@ class SCIPProcessor:
         return path
 
     def _record_symbol(self, symbol: scip_pb2.SymbolInformation) -> int:
-        """Record a symbol in the database."""
+        """Record a symbol in the database and return its ID."""
+        # Store the symbol kind for later call detection
+        if symbol.kind != scip_pb2.SymbolInformation.UnspecifiedKind:
+            self.symbol_kind_map[symbol.symbol] = scip_pb2.SymbolInformation.Kind.Name(symbol.kind)
+
         if symbol.symbol in self.symbol_id_map:
             return self.symbol_id_map[symbol.symbol]
             
@@ -656,34 +680,47 @@ class SCIPProcessor:
         return "\n".join(lines) 
 
     def _process_occurrence(self, occurrence: scip_pb2.Occurrence, symbol_id: int) -> None:
-        """Process a single occurrence with its roles."""
-        roles = occurrence.symbol_roles
-        
-        # Get location info for the occurrence
+        """Process a single occurrence of a symbol."""
         loc_info = self._get_location_info(occurrence)
         if not loc_info:
             return
             
         file_id, start_line, start_col, end_line, end_col = loc_info
+        roles = occurrence.symbol_roles
+        
+        # Handle container and definition roles - these define enclosing symbols
+        if (roles & 0x10) != 0 or (roles & 0x1) != 0:  # Container or Definition
+            # If this symbol is a method/function, push it as the current caller context
+            if self.symbol_kind_map.get(occurrence.symbol) in self.method_like_kinds:
+                self._push_enclosing_symbol(file_id, symbol_id)
         
         # Handle read access and potential calls
-        if roles & 0x8:  # ReadAccess
-            # Without symbol_kind_map, rely solely on the symbol naming heuristic:
-            if (
-                occurrence.symbol.endswith("().") or 
-                occurrence.symbol.endswith(".") or 
-                "#" in occurrence.symbol  # Heuristic for a method call
-            ):
-                # Treat as a call
-                self.db.record_ref_call(symbol_id, symbol_id)
-                self.db.record_reference_location(
-                    symbol_id,
-                    file_id,
-                    start_line,
-                    start_col,
-                    end_line,
-                    end_col
-                )
+        if (roles & 0x8) != 0:  # ReadAccess
+            if self._is_potential_call(occurrence):
+                # Get the current enclosing symbol (caller)
+                caller_symbol_id = self._get_enclosing_symbol(file_id)
+                if caller_symbol_id and caller_symbol_id != symbol_id:
+                    # Record a call from the caller to this symbol
+                    self.db.record_ref_call(caller_symbol_id, symbol_id)
+                    self.db.record_reference_location(
+                        caller_symbol_id,
+                        file_id,
+                        start_line,
+                        start_col,
+                        end_line,
+                        end_col
+                    )
+                else:
+                    # If we don't have a known caller, fallback to usage
+                    self.db.record_ref_usage(symbol_id, symbol_id)
+                    self.db.record_reference_location(
+                        symbol_id,
+                        file_id,
+                        start_line,
+                        start_col,
+                        end_line,
+                        end_col
+                    )
             else:
                 # Treat as usage
                 self.db.record_ref_usage(symbol_id, symbol_id)
@@ -698,58 +735,52 @@ class SCIPProcessor:
         
         # Handle other roles
         if roles & 0x1:  # Definition
-            self.db.record_symbol_location(
-                symbol_id=symbol_id,
-                file_id=file_id,
-                start_line=start_line,
-                start_column=start_col,
-                end_line=end_line,
-                end_column=end_col
-            )
-            
+            self._handle_definition(occurrence, symbol_id)
         if roles & 0x2:  # Import
-            if occurrence.symbol in self.symbol_id_map:
-                target_id = self.symbol_id_map[occurrence.symbol]
-                self.db.record_ref_import(symbol_id, target_id)
-                self.db.record_reference_location(
-                    symbol_id,
-                    file_id,
-                    start_line,
-                    start_col,
-                    end_line,
-                    end_col
-                )
-                
+            self._handle_import(occurrence, symbol_id)
         if roles & 0x4:  # WriteAccess
-            self.db.record_ref_usage(symbol_id, symbol_id)
-            self.db.record_reference_location(
-                symbol_id,
-                file_id,
-                start_line,
-                start_col,
-                end_line,
-                end_col
-            )
-            
+            self._handle_write_access(occurrence, symbol_id)
         if roles & 0x10:  # Container
-            self.db.record_symbol_scope_location(
-                symbol_id=symbol_id,
-                file_id=file_id,
-                start_line=start_line,
-                start_column=1,  # Container scope starts at beginning of line
-                end_line=end_line,
-                end_column=end_col
-            )
+            self._handle_container(occurrence, symbol_id)
+        if roles & 0x20:  # TypeDefinition
+            self._handle_type_usage(occurrence, symbol_id)
+
+    def _push_enclosing_symbol(self, file_id: int, symbol_id: int) -> None:
+        """Push a symbol onto the stack of 'currently active' symbols for this file."""
+        if file_id not in self.enclosing_symbol_stack:
+            self.enclosing_symbol_stack[file_id] = []
+        self.enclosing_symbol_stack[file_id].append(symbol_id)
+
+    def _pop_enclosing_symbol(self, file_id: int) -> None:
+        """Pop the last symbol from the stack for this file."""
+        if file_id in self.enclosing_symbol_stack and self.enclosing_symbol_stack[file_id]:
+            self.enclosing_symbol_stack[file_id].pop()
+
+    def _get_enclosing_symbol(self, file_id: int) -> Optional[int]:
+        """Get the current active symbol (caller) from the stack for this file."""
+        if file_id in self.enclosing_symbol_stack and self.enclosing_symbol_stack[file_id]:
+            return self.enclosing_symbol_stack[file_id][-1]
+        return None
+
+    def _is_potential_call(self, occurrence: scip_pb2.Occurrence) -> bool:
+        """
+        Determine if this occurrence likely represents a call.
+        We consider an occurrence a call if:
+        - symbol_roles includes ReadAccess (0x8)
+        - The symbol is known or appears like a method/function (ends with '()', or is a known function/method symbol)
+        """
+        symbol = occurrence.symbol
+        roles = occurrence.symbol_roles
+        
+        if (roles & 0x8) != 0:  # ReadAccess
+            # Check if we know this symbol's kind
+            target_kind = self.symbol_kind_map.get(symbol)
             
-        if roles & 0x20:  # Type
-            if occurrence.symbol in self.symbol_id_map:
-                target_id = self.symbol_id_map[occurrence.symbol]
-                self.db.record_ref_type_usage(symbol_id, target_id)
-                self.db.record_reference_location(
-                    symbol_id,
-                    file_id,
-                    start_line,
-                    start_col,
-                    end_line,
-                    end_col
-                )
+            # If kind is known and is in method_like_kinds, definitely a call
+            if target_kind in self.method_like_kinds:
+                return True
+                
+            # If we don't know the kind, check the symbol name patterns
+            if symbol.endswith("().") or symbol.endswith("()"):
+                return True
+        return False
