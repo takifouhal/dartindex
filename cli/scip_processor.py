@@ -129,10 +129,15 @@ class SCIPProcessor:
 
     def _process_relationship(self, symbol_id: int, rel) -> None:
         """Process a single relationship between symbols."""
-        if rel.symbol not in self.symbol_id_map:
+        # Skip if either symbol is not in the map
+        if not symbol_id or rel.symbol not in self.symbol_id_map:
             return
             
         target_id = self.symbol_id_map[rel.symbol]
+        # Skip if target_id is None
+        if not target_id:
+            return
+            
         relationship_map = {
             'is_reference': self.db.record_ref_usage,
             'is_implementation': self.db.record_ref_override,
@@ -420,10 +425,18 @@ class SCIPProcessor:
             if symbol.type_parameters:
                 postfix = f"<{', '.join(symbol.type_parameters)}>"
                 
+        # For Parameter or Variable, if name is empty, generate a placeholder name
+        if kind in ["Parameter", "Variable"] and not name:
+            name = f"local_{kind.lower()}_{len(self.symbol_id_map)}"
+            self.logger.debug(f"Generated placeholder name for {kind}: {name}")
+                
         self.logger.debug(f"Final name: {name}")
         self.logger.debug(f"Final prefix: {prefix}")
         self.logger.debug(f"Final postfix: {postfix}")
         self.logger.debug(f"Parent ID: {parent_id}")
+        
+        # Ensure parent exists for symbols that need one
+        parent_id = self._ensure_parent_exists(parent_id, kind)
         
         # Map SCIP kinds to Sourcetrail recording methods with proper parameters
         kind_map = {
@@ -462,8 +475,8 @@ class SCIPProcessor:
             'TypeParameter': lambda: self.db.record_type_parameter_node(
                 name=name, prefix=prefix, postfix=postfix, parent_id=parent_id
             ),
-            'Parameter': lambda: self.db.record_local_symbol(name) if name else None,
-            'Variable': lambda: self.db.record_local_symbol(name) if name else None,
+            'Parameter': lambda: self.db.record_local_symbol(name),  # Removed name check
+            'Variable': lambda: self.db.record_local_symbol(name),   # Removed name check
             'Namespace': lambda: self.db.record_namespace(
                 name=name, prefix=prefix, postfix=postfix, parent_id=parent_id
             ),
@@ -528,9 +541,9 @@ class SCIPProcessor:
             )[-1],
         }
         
-        # Skip recording if we don't have a valid name for named symbols
+        # Skip recording if we don't have a valid name for non-local symbols
         if not name and kind not in ["Parameter", "Variable", "UnspecifiedKind"]:
-            self.logger.warning(f"Skipping symbol with empty name: {symbol.symbol}")
+            self.logger.warning(f"Skipping non-local symbol with empty name: {symbol.symbol}")
             return None
             
         # Get the appropriate recording function or use symbol_node as fallback
@@ -551,8 +564,9 @@ class SCIPProcessor:
                 if "#" in symbol.symbol:
                     parts = symbol.symbol.split("#")
                     class_qualified_path = f"{parts[0]}#{name}"
-                    self.symbol_id_map[class_qualified_path] = symbol_id
-                    self.logger.debug(f"Stored class-qualified path: {class_qualified_path} -> {symbol_id}")
+                    if name:  # Only store if we have a valid name
+                        self.symbol_id_map[class_qualified_path] = symbol_id
+                        self.logger.debug(f"Stored class-qualified path: {class_qualified_path} -> {symbol_id}")
                 
                 # Handle documentation if available
                 if hasattr(symbol, 'documentation') and symbol.documentation:
@@ -561,21 +575,38 @@ class SCIPProcessor:
                 # Handle signature if available
                 if hasattr(symbol, 'signature') and symbol.signature:
                     self._record_symbol_signature(symbol_id, symbol.signature)
+            else:
+                self.logger.warning(f"Failed to record symbol {name} (kind: {kind})")
                     
             return symbol_id
         except Exception as e:
             self.logger.error(f"Failed to record symbol {name}: {str(e)}")
             return None
 
+    def _ensure_parent_exists(self, parent_id: Optional[int], kind: str) -> Optional[int]:
+        """If no parent found but we need one (e.g., for class members), we could create a default namespace."""
+        if parent_id is None and kind in ["Method", "Field", "Function"]:
+            # Create a fallback namespace if none exists
+            ns_id = self.db.record_namespace(name="__global_namespace__")
+            self.logger.debug(f"Created fallback namespace {ns_id} for {kind}")
+            return ns_id
+        return parent_id
+
     def _record_symbol_documentation(self, symbol_id: int, documentation: str) -> None:
         """Record symbol documentation."""
-        # TODO: Implement when Sourcetrail API supports documentation
-        pass
+        try:
+            self.db.record_symbol_documentation(symbol_id, documentation)
+        except AttributeError:
+            self.logger.debug("SourcetrailDB does not support documentation yet.")
+            pass
 
     def _record_symbol_signature(self, symbol_id: int, signature: str) -> None:
         """Record symbol signature."""
-        # TODO: Implement when Sourcetrail API supports signatures
-        pass
+        try:
+            self.db.record_symbol_signature(symbol_id, signature)
+        except AttributeError:
+            self.logger.debug("SourcetrailDB does not support signature recording yet.")
+            pass
 
     def _format_json(self, index: scip_pb2.Index) -> str:
         """
@@ -627,18 +658,98 @@ class SCIPProcessor:
     def _process_occurrence(self, occurrence: scip_pb2.Occurrence, symbol_id: int) -> None:
         """Process a single occurrence with its roles."""
         roles = occurrence.symbol_roles
-        role_handlers = {
-            0x1: ('Definition', self._handle_definition),
-            0x2: ('Import', self._handle_import),
-            0x4: ('WriteAccess', self._handle_write_access),
-            0x8: ('ReadAccess', self._handle_read_access),
-            0x10: ('Container', self._handle_container),
-            0x20: ('Type', self._handle_type_usage)
-        }
         
-        for role_bit, (role_name, handler) in role_handlers.items():
-            if roles & role_bit:
-                try:
-                    handler(occurrence, symbol_id)
-                except Exception as e:
-                    self.logger.warning(f"Failed to handle {role_name} for symbol {occurrence.symbol}: {str(e)}")
+        # Get location info for the occurrence
+        loc_info = self._get_location_info(occurrence)
+        if not loc_info:
+            return
+            
+        file_id, start_line, start_col, end_line, end_col = loc_info
+        
+        # Handle read access and potential calls
+        if roles & 0x8:  # ReadAccess
+            # Without symbol_kind_map, rely solely on the symbol naming heuristic:
+            if (
+                occurrence.symbol.endswith("().") or 
+                occurrence.symbol.endswith(".") or 
+                "#" in occurrence.symbol  # Heuristic for a method call
+            ):
+                # Treat as a call
+                self.db.record_ref_call(symbol_id, symbol_id)
+                self.db.record_reference_location(
+                    symbol_id,
+                    file_id,
+                    start_line,
+                    start_col,
+                    end_line,
+                    end_col
+                )
+            else:
+                # Treat as usage
+                self.db.record_ref_usage(symbol_id, symbol_id)
+                self.db.record_reference_location(
+                    symbol_id,
+                    file_id,
+                    start_line,
+                    start_col,
+                    end_line,
+                    end_col
+                )
+        
+        # Handle other roles
+        if roles & 0x1:  # Definition
+            self.db.record_symbol_location(
+                symbol_id=symbol_id,
+                file_id=file_id,
+                start_line=start_line,
+                start_column=start_col,
+                end_line=end_line,
+                end_column=end_col
+            )
+            
+        if roles & 0x2:  # Import
+            if occurrence.symbol in self.symbol_id_map:
+                target_id = self.symbol_id_map[occurrence.symbol]
+                self.db.record_ref_import(symbol_id, target_id)
+                self.db.record_reference_location(
+                    symbol_id,
+                    file_id,
+                    start_line,
+                    start_col,
+                    end_line,
+                    end_col
+                )
+                
+        if roles & 0x4:  # WriteAccess
+            self.db.record_ref_usage(symbol_id, symbol_id)
+            self.db.record_reference_location(
+                symbol_id,
+                file_id,
+                start_line,
+                start_col,
+                end_line,
+                end_col
+            )
+            
+        if roles & 0x10:  # Container
+            self.db.record_symbol_scope_location(
+                symbol_id=symbol_id,
+                file_id=file_id,
+                start_line=start_line,
+                start_column=1,  # Container scope starts at beginning of line
+                end_line=end_line,
+                end_column=end_col
+            )
+            
+        if roles & 0x20:  # Type
+            if occurrence.symbol in self.symbol_id_map:
+                target_id = self.symbol_id_map[occurrence.symbol]
+                self.db.record_ref_type_usage(symbol_id, target_id)
+                self.db.record_reference_location(
+                    symbol_id,
+                    file_id,
+                    start_line,
+                    start_col,
+                    end_line,
+                    end_col
+                )

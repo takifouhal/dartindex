@@ -1,0 +1,5501 @@
+{
+  "metadata": {
+    "text_document_encoding": "UTF8"
+  },
+  "documents": [
+    {
+      "relative_path": "test/utils/string_utils.dart",
+      "occurrences": [
+        {
+          "range": [
+            0,
+            0,
+            0
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/utils/`string_utils.dart`/",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            0,
+            6,
+            17
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/utils/`string_utils.dart`/StringUtils#",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            1,
+            14,
+            26
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/utils/`string_utils.dart`/StringUtils#isValidEmail().",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            1,
+            9,
+            13
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`bool.dart`/bool#"
+        },
+        {
+          "range": [
+            1,
+            34,
+            39
+          ],
+          "symbol": "local 0",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            1,
+            27,
+            33
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#"
+        },
+        {
+          "range": [
+            2,
+            10,
+            20
+          ],
+          "symbol": "local 1",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            2,
+            23,
+            29
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`regexp.dart`/RegExp#"
+        },
+        {
+          "range": [
+            5,
+            11,
+            21
+          ],
+          "symbol": "local 1"
+        },
+        {
+          "range": [
+            5,
+            22,
+            30
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`regexp.dart`/RegExp#hasMatch()."
+        },
+        {
+          "range": [
+            5,
+            31,
+            36
+          ],
+          "symbol": "local 0"
+        },
+        {
+          "range": [
+            8,
+            16,
+            26
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/utils/`string_utils.dart`/StringUtils#capitalize().",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            8,
+            9,
+            15
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#"
+        },
+        {
+          "range": [
+            8,
+            34,
+            38
+          ],
+          "symbol": "local 2",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            8,
+            27,
+            33
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#"
+        },
+        {
+          "range": [
+            9,
+            8,
+            12
+          ],
+          "symbol": "local 2"
+        },
+        {
+          "range": [
+            9,
+            13,
+            20
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#`<get>isEmpty`."
+        },
+        {
+          "range": [
+            9,
+            29,
+            33
+          ],
+          "symbol": "local 2"
+        },
+        {
+          "range": [
+            10,
+            11,
+            15
+          ],
+          "symbol": "local 2"
+        },
+        {
+          "range": [
+            10,
+            19,
+            30
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#toUpperCase()."
+        },
+        {
+          "range": [
+            10,
+            35,
+            39
+          ],
+          "symbol": "local 2"
+        },
+        {
+          "range": [
+            10,
+            40,
+            49
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#substring()."
+        },
+        {
+          "range": [
+            13,
+            16,
+            27
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/utils/`string_utils.dart`/StringUtils#toTitleCase().",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            13,
+            9,
+            15
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#"
+        },
+        {
+          "range": [
+            13,
+            35,
+            39
+          ],
+          "symbol": "local 3",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            13,
+            28,
+            34
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#"
+        },
+        {
+          "range": [
+            14,
+            8,
+            12
+          ],
+          "symbol": "local 3"
+        },
+        {
+          "range": [
+            14,
+            13,
+            20
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#`<get>isEmpty`."
+        },
+        {
+          "range": [
+            14,
+            29,
+            33
+          ],
+          "symbol": "local 3"
+        },
+        {
+          "range": [
+            15,
+            11,
+            15
+          ],
+          "symbol": "local 3"
+        },
+        {
+          "range": [
+            15,
+            16,
+            21
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#split()."
+        },
+        {
+          "range": [
+            16,
+            9,
+            12
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`iterable.dart`/Iterable#map()."
+        },
+        {
+          "range": [
+            16,
+            14,
+            18
+          ],
+          "symbol": "local 4",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            16,
+            23,
+            33
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/utils/`string_utils.dart`/StringUtils#capitalize()."
+        },
+        {
+          "range": [
+            16,
+            34,
+            38
+          ],
+          "symbol": "local 4"
+        },
+        {
+          "range": [
+            16,
+            39,
+            50
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#toLowerCase()."
+        },
+        {
+          "range": [
+            17,
+            9,
+            13
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`iterable.dart`/Iterable#join()."
+        },
+        {
+          "range": [
+            20,
+            16,
+            24
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/utils/`string_utils.dart`/StringUtils#truncate().",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            20,
+            9,
+            15
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#"
+        },
+        {
+          "range": [
+            20,
+            32,
+            36
+          ],
+          "symbol": "local 5",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            20,
+            25,
+            31
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#"
+        },
+        {
+          "range": [
+            20,
+            42,
+            51
+          ],
+          "symbol": "local 6",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            20,
+            38,
+            41
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`int.dart`/int#"
+        },
+        {
+          "range": [
+            20,
+            61,
+            67
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/utils/`string_utils.dart`/StringUtils#truncate().(suffix)",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            20,
+            54,
+            60
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#"
+        },
+        {
+          "range": [
+            21,
+            8,
+            12
+          ],
+          "symbol": "local 5"
+        },
+        {
+          "range": [
+            21,
+            13,
+            19
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#`<get>length`."
+        },
+        {
+          "range": [
+            21,
+            23,
+            32
+          ],
+          "symbol": "local 6"
+        },
+        {
+          "range": [
+            21,
+            41,
+            45
+          ],
+          "symbol": "local 5"
+        },
+        {
+          "range": [
+            22,
+            11,
+            15
+          ],
+          "symbol": "local 5"
+        },
+        {
+          "range": [
+            22,
+            16,
+            25
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#substring()."
+        },
+        {
+          "range": [
+            22,
+            29,
+            38
+          ],
+          "symbol": "local 6"
+        },
+        {
+          "range": [
+            22,
+            41,
+            47
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/utils/`string_utils.dart`/StringUtils#truncate().(suffix)"
+        },
+        {
+          "range": [
+            22,
+            48,
+            54
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#`<get>length`."
+        },
+        {
+          "range": [
+            22,
+            58,
+            64
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/utils/`string_utils.dart`/StringUtils#truncate().(suffix)"
+        },
+        {
+          "range": [
+            25,
+            16,
+            23
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/utils/`string_utils.dart`/StringUtils#slugify().",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            25,
+            9,
+            15
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#"
+        },
+        {
+          "range": [
+            25,
+            31,
+            35
+          ],
+          "symbol": "local 7",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            25,
+            24,
+            30
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#"
+        },
+        {
+          "range": [
+            26,
+            11,
+            15
+          ],
+          "symbol": "local 7"
+        },
+        {
+          "range": [
+            27,
+            9,
+            20
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#toLowerCase()."
+        },
+        {
+          "range": [
+            28,
+            9,
+            19
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#replaceAll()."
+        },
+        {
+          "range": [
+            28,
+            20,
+            26
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`regexp.dart`/RegExp#"
+        },
+        {
+          "range": [
+            29,
+            9,
+            19
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#replaceAll()."
+        },
+        {
+          "range": [
+            29,
+            20,
+            26
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`regexp.dart`/RegExp#"
+        }
+      ],
+      "symbols": [
+        {
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/utils/`string_utils.dart`/"
+        },
+        {
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/utils/`string_utils.dart`/StringUtils#",
+          "kind": "Class"
+        },
+        {
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/utils/`string_utils.dart`/StringUtils#isValidEmail().",
+          "kind": "Method"
+        },
+        {
+          "symbol": "local 1"
+        },
+        {
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/utils/`string_utils.dart`/StringUtils#capitalize().",
+          "kind": "Method"
+        },
+        {
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/utils/`string_utils.dart`/StringUtils#toTitleCase().",
+          "kind": "Method"
+        },
+        {
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/utils/`string_utils.dart`/StringUtils#truncate().",
+          "kind": "Method"
+        },
+        {
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/utils/`string_utils.dart`/StringUtils#slugify().",
+          "kind": "Method"
+        }
+      ]
+    },
+    {
+      "relative_path": "test/models/user.dart",
+      "occurrences": [
+        {
+          "range": [
+            0,
+            0,
+            0
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            0,
+            6,
+            10
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            1,
+            8,
+            14
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#"
+        },
+        {
+          "range": [
+            1,
+            15,
+            17
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#id.",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            2,
+            8,
+            14
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#"
+        },
+        {
+          "range": [
+            2,
+            15,
+            23
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#username.",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            3,
+            8,
+            14
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#"
+        },
+        {
+          "range": [
+            3,
+            15,
+            20
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#email.",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            4,
+            2,
+            8
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#"
+        },
+        {
+          "range": [
+            4,
+            10,
+            19
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#firstName.",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            5,
+            2,
+            8
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#"
+        },
+        {
+          "range": [
+            5,
+            10,
+            18
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#lastName.",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            6,
+            2,
+            10
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`date_time.dart`/DateTime#"
+        },
+        {
+          "range": [
+            6,
+            12,
+            21
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#lastLogin.",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            7,
+            2,
+            6
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`bool.dart`/bool#"
+        },
+        {
+          "range": [
+            7,
+            7,
+            15
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#isActive.",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            9,
+            2,
+            6
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#`<constructor>`().",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            9,
+            2,
+            6
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#"
+        },
+        {
+          "range": [
+            10,
+            18,
+            20
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#id."
+        },
+        {
+          "range": [
+            10,
+            18,
+            20
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#`<constructor>`().(id)",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            11,
+            18,
+            26
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#username."
+        },
+        {
+          "range": [
+            11,
+            18,
+            26
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#`<constructor>`().(username)",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            12,
+            18,
+            23
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#email."
+        },
+        {
+          "range": [
+            12,
+            18,
+            23
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#`<constructor>`().(email)",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            13,
+            9,
+            18
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#firstName."
+        },
+        {
+          "range": [
+            13,
+            9,
+            18
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#`<constructor>`().(firstName)",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            14,
+            9,
+            17
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#lastName."
+        },
+        {
+          "range": [
+            14,
+            9,
+            17
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#`<constructor>`().(lastName)",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            15,
+            9,
+            18
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#lastLogin."
+        },
+        {
+          "range": [
+            15,
+            9,
+            18
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#`<constructor>`().(lastLogin)",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            16,
+            9,
+            17
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#isActive."
+        },
+        {
+          "range": [
+            16,
+            9,
+            17
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#`<constructor>`().(isActive)",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            19,
+            15,
+            23
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#fromJson().",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            19,
+            10,
+            14
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#"
+        },
+        {
+          "range": [
+            19,
+            45,
+            49
+          ],
+          "symbol": "local 0",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            19,
+            24,
+            27
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`map.dart`/Map#"
+        },
+        {
+          "range": [
+            19,
+            28,
+            34
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#"
+        },
+        {
+          "range": [
+            20,
+            11,
+            15
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#"
+        },
+        {
+          "range": [
+            21,
+            6,
+            8
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#`<constructor>`().(id)"
+        },
+        {
+          "range": [
+            21,
+            10,
+            14
+          ],
+          "symbol": "local 0"
+        },
+        {
+          "range": [
+            21,
+            24,
+            30
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#"
+        },
+        {
+          "range": [
+            22,
+            6,
+            14
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#`<constructor>`().(username)"
+        },
+        {
+          "range": [
+            22,
+            16,
+            20
+          ],
+          "symbol": "local 0"
+        },
+        {
+          "range": [
+            22,
+            36,
+            42
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#"
+        },
+        {
+          "range": [
+            23,
+            6,
+            11
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#`<constructor>`().(email)"
+        },
+        {
+          "range": [
+            23,
+            13,
+            17
+          ],
+          "symbol": "local 0"
+        },
+        {
+          "range": [
+            23,
+            30,
+            36
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#"
+        },
+        {
+          "range": [
+            24,
+            6,
+            15
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#`<constructor>`().(firstName)"
+        },
+        {
+          "range": [
+            24,
+            17,
+            21
+          ],
+          "symbol": "local 0"
+        },
+        {
+          "range": [
+            24,
+            38,
+            44
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#"
+        },
+        {
+          "range": [
+            25,
+            6,
+            14
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#`<constructor>`().(lastName)"
+        },
+        {
+          "range": [
+            25,
+            16,
+            20
+          ],
+          "symbol": "local 0"
+        },
+        {
+          "range": [
+            25,
+            36,
+            42
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#"
+        },
+        {
+          "range": [
+            26,
+            6,
+            15
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#`<constructor>`().(lastLogin)"
+        },
+        {
+          "range": [
+            26,
+            17,
+            21
+          ],
+          "symbol": "local 0"
+        },
+        {
+          "range": [
+            27,
+            12,
+            20
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`date_time.dart`/DateTime#"
+        },
+        {
+          "range": [
+            27,
+            21,
+            26
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`date_time.dart`/DateTime#parse()."
+        },
+        {
+          "range": [
+            27,
+            27,
+            31
+          ],
+          "symbol": "local 0"
+        },
+        {
+          "range": [
+            27,
+            48,
+            54
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#"
+        },
+        {
+          "range": [
+            29,
+            6,
+            14
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#`<constructor>`().(isActive)"
+        },
+        {
+          "range": [
+            29,
+            16,
+            20
+          ],
+          "symbol": "local 0"
+        },
+        {
+          "range": [
+            29,
+            36,
+            40
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`bool.dart`/bool#"
+        },
+        {
+          "range": [
+            33,
+            23,
+            29
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#toJson().",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            33,
+            2,
+            5
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`map.dart`/Map#"
+        },
+        {
+          "range": [
+            33,
+            6,
+            12
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#"
+        },
+        {
+          "range": [
+            35,
+            12,
+            14
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#id."
+        },
+        {
+          "range": [
+            36,
+            18,
+            26
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#username."
+        },
+        {
+          "range": [
+            37,
+            15,
+            20
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#email."
+        },
+        {
+          "range": [
+            38,
+            19,
+            28
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#firstName."
+        },
+        {
+          "range": [
+            39,
+            18,
+            26
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#lastName."
+        },
+        {
+          "range": [
+            40,
+            19,
+            28
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#lastLogin."
+        },
+        {
+          "range": [
+            40,
+            30,
+            45
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`date_time.dart`/DateTime#toIso8601String()."
+        },
+        {
+          "range": [
+            41,
+            18,
+            26
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#isActive."
+        },
+        {
+          "range": [
+            45,
+            7,
+            15
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#copyWith().",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            45,
+            2,
+            6
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#"
+        },
+        {
+          "range": [
+            46,
+            12,
+            14
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#copyWith().(id)",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            46,
+            4,
+            10
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#"
+        },
+        {
+          "range": [
+            47,
+            12,
+            20
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#copyWith().(username)",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            47,
+            4,
+            10
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#"
+        },
+        {
+          "range": [
+            48,
+            12,
+            17
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#copyWith().(email)",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            48,
+            4,
+            10
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#"
+        },
+        {
+          "range": [
+            49,
+            12,
+            21
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#copyWith().(firstName)",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            49,
+            4,
+            10
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#"
+        },
+        {
+          "range": [
+            50,
+            12,
+            20
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#copyWith().(lastName)",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            50,
+            4,
+            10
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#"
+        },
+        {
+          "range": [
+            51,
+            14,
+            23
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#copyWith().(lastLogin)",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            51,
+            4,
+            12
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`date_time.dart`/DateTime#"
+        },
+        {
+          "range": [
+            52,
+            10,
+            18
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#copyWith().(isActive)",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            52,
+            4,
+            8
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`bool.dart`/bool#"
+        },
+        {
+          "range": [
+            54,
+            11,
+            15
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#"
+        },
+        {
+          "range": [
+            55,
+            6,
+            8
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#`<constructor>`().(id)"
+        },
+        {
+          "range": [
+            55,
+            10,
+            12
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#copyWith().(id)"
+        },
+        {
+          "range": [
+            55,
+            21,
+            23
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#id."
+        },
+        {
+          "range": [
+            56,
+            6,
+            14
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#`<constructor>`().(username)"
+        },
+        {
+          "range": [
+            56,
+            16,
+            24
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#copyWith().(username)"
+        },
+        {
+          "range": [
+            56,
+            33,
+            41
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#username."
+        },
+        {
+          "range": [
+            57,
+            6,
+            11
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#`<constructor>`().(email)"
+        },
+        {
+          "range": [
+            57,
+            13,
+            18
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#copyWith().(email)"
+        },
+        {
+          "range": [
+            57,
+            27,
+            32
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#email."
+        },
+        {
+          "range": [
+            58,
+            6,
+            15
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#`<constructor>`().(firstName)"
+        },
+        {
+          "range": [
+            58,
+            17,
+            26
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#copyWith().(firstName)"
+        },
+        {
+          "range": [
+            58,
+            35,
+            44
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#firstName."
+        },
+        {
+          "range": [
+            59,
+            6,
+            14
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#`<constructor>`().(lastName)"
+        },
+        {
+          "range": [
+            59,
+            16,
+            24
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#copyWith().(lastName)"
+        },
+        {
+          "range": [
+            59,
+            33,
+            41
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#lastName."
+        },
+        {
+          "range": [
+            60,
+            6,
+            15
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#`<constructor>`().(lastLogin)"
+        },
+        {
+          "range": [
+            60,
+            17,
+            26
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#copyWith().(lastLogin)"
+        },
+        {
+          "range": [
+            60,
+            35,
+            44
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#lastLogin."
+        },
+        {
+          "range": [
+            61,
+            6,
+            14
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#`<constructor>`().(isActive)"
+        },
+        {
+          "range": [
+            61,
+            16,
+            24
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#copyWith().(isActive)"
+        },
+        {
+          "range": [
+            61,
+            33,
+            41
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#isActive."
+        }
+      ],
+      "symbols": [
+        {
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/"
+        },
+        {
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#",
+          "kind": "Class"
+        },
+        {
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#id.",
+          "kind": "Field"
+        },
+        {
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#username.",
+          "kind": "Field"
+        },
+        {
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#email.",
+          "kind": "Field"
+        },
+        {
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#firstName.",
+          "kind": "Field"
+        },
+        {
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#lastName.",
+          "kind": "Field"
+        },
+        {
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#lastLogin.",
+          "kind": "Field"
+        },
+        {
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#isActive.",
+          "kind": "Field"
+        },
+        {
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#`<constructor>`().",
+          "kind": "Constructor"
+        },
+        {
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#fromJson().",
+          "kind": "Constructor"
+        },
+        {
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#toJson().",
+          "kind": "Method"
+        },
+        {
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#copyWith().",
+          "kind": "Method"
+        }
+      ]
+    },
+    {
+      "relative_path": "test/widget_test.dart",
+      "occurrences": [
+        {
+          "range": [
+            0,
+            0,
+            0
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/`widget_test.dart`/",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            12,
+            5,
+            9
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/`widget_test.dart`/main().",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            13,
+            2,
+            13
+          ],
+          "symbol": "scip-dart pub flutter_test . lib/src/`widget_tester.dart`/testWidgets()."
+        },
+        {
+          "range": [
+            13,
+            61,
+            67
+          ],
+          "symbol": "local 0",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            13,
+            48,
+            60
+          ],
+          "symbol": "scip-dart pub flutter_test . lib/src/`widget_tester.dart`/WidgetTester#"
+        },
+        {
+          "range": [
+            15,
+            10,
+            16
+          ],
+          "symbol": "local 0"
+        },
+        {
+          "range": [
+            15,
+            17,
+            27
+          ],
+          "symbol": "scip-dart pub flutter_test . lib/src/`widget_tester.dart`/WidgetTester#pumpWidget()."
+        },
+        {
+          "range": [
+            15,
+            34,
+            39
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 lib/`main.dart`/MyApp#"
+        },
+        {
+          "range": [
+            18,
+            4,
+            10
+          ],
+          "symbol": "scip-dart pub flutter_test . lib/src/`widget_tester.dart`/expect()."
+        },
+        {
+          "range": [
+            18,
+            11,
+            15
+          ],
+          "symbol": "scip-dart pub flutter_test . lib/src/`finders.dart`/find."
+        },
+        {
+          "range": [
+            18,
+            16,
+            20
+          ],
+          "symbol": "scip-dart pub flutter_test . lib/src/`finders.dart`/CommonFinders#text()."
+        },
+        {
+          "range": [
+            18,
+            27,
+            41
+          ],
+          "symbol": "scip-dart pub flutter_test . lib/src/`matchers.dart`/findsOneWidget."
+        },
+        {
+          "range": [
+            19,
+            4,
+            10
+          ],
+          "symbol": "scip-dart pub flutter_test . lib/src/`widget_tester.dart`/expect()."
+        },
+        {
+          "range": [
+            19,
+            11,
+            15
+          ],
+          "symbol": "scip-dart pub flutter_test . lib/src/`finders.dart`/find."
+        },
+        {
+          "range": [
+            19,
+            16,
+            20
+          ],
+          "symbol": "scip-dart pub flutter_test . lib/src/`finders.dart`/CommonFinders#text()."
+        },
+        {
+          "range": [
+            19,
+            27,
+            39
+          ],
+          "symbol": "scip-dart pub flutter_test . lib/src/`matchers.dart`/findsNothing."
+        },
+        {
+          "range": [
+            22,
+            10,
+            16
+          ],
+          "symbol": "local 0"
+        },
+        {
+          "range": [
+            22,
+            17,
+            20
+          ],
+          "symbol": "scip-dart pub flutter_test . lib/src/`controller.dart`/WidgetController#tap()."
+        },
+        {
+          "range": [
+            22,
+            21,
+            25
+          ],
+          "symbol": "scip-dart pub flutter_test . lib/src/`finders.dart`/find."
+        },
+        {
+          "range": [
+            22,
+            26,
+            32
+          ],
+          "symbol": "scip-dart pub flutter_test . lib/src/`finders.dart`/CommonFinders#byIcon()."
+        },
+        {
+          "range": [
+            22,
+            33,
+            38
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/material/`icons.dart`/Icons#"
+        },
+        {
+          "range": [
+            22,
+            39,
+            42
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/material/`icons.dart`/Icons#add."
+        },
+        {
+          "range": [
+            23,
+            10,
+            16
+          ],
+          "symbol": "local 0"
+        },
+        {
+          "range": [
+            23,
+            17,
+            21
+          ],
+          "symbol": "scip-dart pub flutter_test . lib/src/`widget_tester.dart`/WidgetTester#pump()."
+        },
+        {
+          "range": [
+            26,
+            4,
+            10
+          ],
+          "symbol": "scip-dart pub flutter_test . lib/src/`widget_tester.dart`/expect()."
+        },
+        {
+          "range": [
+            26,
+            11,
+            15
+          ],
+          "symbol": "scip-dart pub flutter_test . lib/src/`finders.dart`/find."
+        },
+        {
+          "range": [
+            26,
+            16,
+            20
+          ],
+          "symbol": "scip-dart pub flutter_test . lib/src/`finders.dart`/CommonFinders#text()."
+        },
+        {
+          "range": [
+            26,
+            27,
+            39
+          ],
+          "symbol": "scip-dart pub flutter_test . lib/src/`matchers.dart`/findsNothing."
+        },
+        {
+          "range": [
+            27,
+            4,
+            10
+          ],
+          "symbol": "scip-dart pub flutter_test . lib/src/`widget_tester.dart`/expect()."
+        },
+        {
+          "range": [
+            27,
+            11,
+            15
+          ],
+          "symbol": "scip-dart pub flutter_test . lib/src/`finders.dart`/find."
+        },
+        {
+          "range": [
+            27,
+            16,
+            20
+          ],
+          "symbol": "scip-dart pub flutter_test . lib/src/`finders.dart`/CommonFinders#text()."
+        },
+        {
+          "range": [
+            27,
+            27,
+            41
+          ],
+          "symbol": "scip-dart pub flutter_test . lib/src/`matchers.dart`/findsOneWidget."
+        }
+      ],
+      "symbols": [
+        {
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/`widget_test.dart`/"
+        },
+        {
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/`widget_test.dart`/main().",
+          "kind": "Function"
+        }
+      ]
+    },
+    {
+      "relative_path": "test/services/user_service.dart",
+      "occurrences": [
+        {
+          "range": [
+            0,
+            0,
+            0
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            4,
+            6,
+            17
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/UserService#",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            5,
+            8,
+            12
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`list.dart`/List#"
+        },
+        {
+          "range": [
+            5,
+            13,
+            17
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#"
+        },
+        {
+          "range": [
+            5,
+            19,
+            25
+          ],
+          "symbol": "local 0",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            6,
+            8,
+            19
+          ],
+          "symbol": "local 1",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            6,
+            22,
+            38
+          ],
+          "symbol": "scip-dart pub dart:async 3.5.0 dart:async/`stream_controller.dart`/StreamController#"
+        },
+        {
+          "range": [
+            6,
+            39,
+            43
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`list.dart`/List#"
+        },
+        {
+          "range": [
+            6,
+            44,
+            48
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#"
+        },
+        {
+          "range": [
+            6,
+            51,
+            60
+          ],
+          "symbol": "scip-dart pub dart:async 3.5.0 dart:async/`stream_controller.dart`/StreamController#broadcast()."
+        },
+        {
+          "range": [
+            8,
+            25,
+            36
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/UserService#`<get>usersStream`.",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            8,
+            2,
+            8
+          ],
+          "symbol": "scip-dart pub dart:async 3.5.0 dart:async/`stream.dart`/Stream#"
+        },
+        {
+          "range": [
+            8,
+            9,
+            13
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`list.dart`/List#"
+        },
+        {
+          "range": [
+            8,
+            14,
+            18
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#"
+        },
+        {
+          "range": [
+            8,
+            40,
+            51
+          ],
+          "symbol": "local 1"
+        },
+        {
+          "range": [
+            8,
+            52,
+            58
+          ],
+          "symbol": "scip-dart pub dart:async 3.5.0 dart:async/`stream_controller.dart`/StreamController#`<get>stream`."
+        },
+        {
+          "range": [
+            10,
+            15,
+            25
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/UserService#createUser().",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            10,
+            2,
+            8
+          ],
+          "symbol": "scip-dart pub dart:async 3.5.0 dart:async/`future.dart`/Future#"
+        },
+        {
+          "range": [
+            10,
+            9,
+            13
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#"
+        },
+        {
+          "range": [
+            11,
+            20,
+            28
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/UserService#createUser().(username)",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            11,
+            13,
+            19
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#"
+        },
+        {
+          "range": [
+            12,
+            20,
+            25
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/UserService#createUser().(email)",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            12,
+            13,
+            19
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#"
+        },
+        {
+          "range": [
+            13,
+            12,
+            21
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/UserService#createUser().(firstName)",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            13,
+            4,
+            10
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#"
+        },
+        {
+          "range": [
+            14,
+            12,
+            20
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/UserService#createUser().(lastName)",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            14,
+            4,
+            10
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#"
+        },
+        {
+          "range": [
+            17,
+            10,
+            16
+          ],
+          "symbol": "scip-dart pub dart:async 3.5.0 dart:async/`future.dart`/Future#"
+        },
+        {
+          "range": [
+            17,
+            17,
+            24
+          ],
+          "symbol": "scip-dart pub dart:async 3.5.0 dart:async/`future.dart`/Future#delayed()."
+        },
+        {
+          "range": [
+            17,
+            31,
+            39
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`duration.dart`/Duration#"
+        },
+        {
+          "range": [
+            17,
+            40,
+            52
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`duration.dart`/Duration#`<constructor>`().(milliseconds)"
+        },
+        {
+          "range": [
+            19,
+            9,
+            20
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/utils/`string_utils.dart`/StringUtils#"
+        },
+        {
+          "range": [
+            19,
+            21,
+            33
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/utils/`string_utils.dart`/StringUtils#isValidEmail()."
+        },
+        {
+          "range": [
+            19,
+            34,
+            39
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/UserService#createUser().(email)"
+        },
+        {
+          "range": [
+            20,
+            12,
+            25
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`errors.dart`/ArgumentError#"
+        },
+        {
+          "range": [
+            23,
+            10,
+            14
+          ],
+          "symbol": "local 2",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            23,
+            17,
+            21
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#"
+        },
+        {
+          "range": [
+            24,
+            6,
+            8
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#`<constructor>`().(id)"
+        },
+        {
+          "range": [
+            24,
+            10,
+            18
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`date_time.dart`/DateTime#"
+        },
+        {
+          "range": [
+            24,
+            19,
+            22
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`date_time.dart`/DateTime#now()."
+        },
+        {
+          "range": [
+            24,
+            25,
+            47
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`date_time.dart`/DateTime#`<get>millisecondsSinceEpoch`."
+        },
+        {
+          "range": [
+            24,
+            48,
+            56
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`int.dart`/int#toString()."
+        },
+        {
+          "range": [
+            25,
+            6,
+            14
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#`<constructor>`().(username)"
+        },
+        {
+          "range": [
+            25,
+            16,
+            24
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/UserService#createUser().(username)"
+        },
+        {
+          "range": [
+            26,
+            6,
+            11
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#`<constructor>`().(email)"
+        },
+        {
+          "range": [
+            26,
+            13,
+            18
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/UserService#createUser().(email)"
+        },
+        {
+          "range": [
+            27,
+            6,
+            15
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#`<constructor>`().(firstName)"
+        },
+        {
+          "range": [
+            27,
+            17,
+            26
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/UserService#createUser().(firstName)"
+        },
+        {
+          "range": [
+            28,
+            6,
+            14
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#`<constructor>`().(lastName)"
+        },
+        {
+          "range": [
+            28,
+            16,
+            24
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/UserService#createUser().(lastName)"
+        },
+        {
+          "range": [
+            29,
+            6,
+            15
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#`<constructor>`().(lastLogin)"
+        },
+        {
+          "range": [
+            29,
+            17,
+            25
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`date_time.dart`/DateTime#"
+        },
+        {
+          "range": [
+            29,
+            26,
+            29
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`date_time.dart`/DateTime#now()."
+        },
+        {
+          "range": [
+            32,
+            4,
+            10
+          ],
+          "symbol": "local 0"
+        },
+        {
+          "range": [
+            32,
+            11,
+            14
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`list.dart`/List#add()."
+        },
+        {
+          "range": [
+            32,
+            15,
+            19
+          ],
+          "symbol": "local 2"
+        },
+        {
+          "range": [
+            33,
+            4,
+            15
+          ],
+          "symbol": "local 1"
+        },
+        {
+          "range": [
+            33,
+            16,
+            19
+          ],
+          "symbol": "scip-dart pub dart:async 3.5.0 dart:async/`stream_controller.dart`/StreamController#add()."
+        },
+        {
+          "range": [
+            33,
+            20,
+            26
+          ],
+          "symbol": "local 0"
+        },
+        {
+          "range": [
+            34,
+            11,
+            15
+          ],
+          "symbol": "local 2"
+        },
+        {
+          "range": [
+            37,
+            16,
+            27
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/UserService#getUserById().",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            37,
+            2,
+            8
+          ],
+          "symbol": "scip-dart pub dart:async 3.5.0 dart:async/`future.dart`/Future#"
+        },
+        {
+          "range": [
+            37,
+            9,
+            13
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#"
+        },
+        {
+          "range": [
+            37,
+            35,
+            37
+          ],
+          "symbol": "local 3",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            37,
+            28,
+            34
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#"
+        },
+        {
+          "range": [
+            38,
+            10,
+            16
+          ],
+          "symbol": "scip-dart pub dart:async 3.5.0 dart:async/`future.dart`/Future#"
+        },
+        {
+          "range": [
+            38,
+            17,
+            24
+          ],
+          "symbol": "scip-dart pub dart:async 3.5.0 dart:async/`future.dart`/Future#delayed()."
+        },
+        {
+          "range": [
+            38,
+            31,
+            39
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`duration.dart`/Duration#"
+        },
+        {
+          "range": [
+            38,
+            40,
+            52
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`duration.dart`/Duration#`<constructor>`().(milliseconds)"
+        },
+        {
+          "range": [
+            39,
+            11,
+            17
+          ],
+          "symbol": "local 0"
+        },
+        {
+          "range": [
+            39,
+            18,
+            28
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`iterable.dart`/Iterable#firstWhere()."
+        },
+        {
+          "range": [
+            39,
+            30,
+            34
+          ],
+          "symbol": "local 4",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            39,
+            39,
+            43
+          ],
+          "symbol": "local 4"
+        },
+        {
+          "range": [
+            39,
+            44,
+            46
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#id."
+        },
+        {
+          "range": [
+            39,
+            50,
+            52
+          ],
+          "symbol": "local 3"
+        },
+        {
+          "range": [
+            42,
+            21,
+            32
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/UserService#searchUsers().",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            42,
+            2,
+            8
+          ],
+          "symbol": "scip-dart pub dart:async 3.5.0 dart:async/`future.dart`/Future#"
+        },
+        {
+          "range": [
+            42,
+            9,
+            13
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`list.dart`/List#"
+        },
+        {
+          "range": [
+            42,
+            14,
+            18
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#"
+        },
+        {
+          "range": [
+            42,
+            40,
+            45
+          ],
+          "symbol": "local 5",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            42,
+            33,
+            39
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#"
+        },
+        {
+          "range": [
+            43,
+            10,
+            16
+          ],
+          "symbol": "scip-dart pub dart:async 3.5.0 dart:async/`future.dart`/Future#"
+        },
+        {
+          "range": [
+            43,
+            17,
+            24
+          ],
+          "symbol": "scip-dart pub dart:async 3.5.0 dart:async/`future.dart`/Future#delayed()."
+        },
+        {
+          "range": [
+            43,
+            31,
+            39
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`duration.dart`/Duration#"
+        },
+        {
+          "range": [
+            43,
+            40,
+            52
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`duration.dart`/Duration#`<constructor>`().(milliseconds)"
+        },
+        {
+          "range": [
+            44,
+            4,
+            9
+          ],
+          "symbol": "local 5"
+        },
+        {
+          "range": [
+            44,
+            12,
+            17
+          ],
+          "symbol": "local 5"
+        },
+        {
+          "range": [
+            44,
+            18,
+            29
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#toLowerCase()."
+        },
+        {
+          "range": [
+            45,
+            11,
+            17
+          ],
+          "symbol": "local 0"
+        },
+        {
+          "range": [
+            45,
+            18,
+            23
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`iterable.dart`/Iterable#where()."
+        },
+        {
+          "range": [
+            45,
+            25,
+            29
+          ],
+          "symbol": "local 6",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            46,
+            8,
+            12
+          ],
+          "symbol": "local 6"
+        },
+        {
+          "range": [
+            46,
+            13,
+            21
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#username."
+        },
+        {
+          "range": [
+            46,
+            22,
+            33
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#toLowerCase()."
+        },
+        {
+          "range": [
+            46,
+            36,
+            44
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#contains()."
+        },
+        {
+          "range": [
+            46,
+            45,
+            50
+          ],
+          "symbol": "local 5"
+        },
+        {
+          "range": [
+            47,
+            8,
+            12
+          ],
+          "symbol": "local 6"
+        },
+        {
+          "range": [
+            47,
+            13,
+            18
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#email."
+        },
+        {
+          "range": [
+            47,
+            19,
+            30
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#toLowerCase()."
+        },
+        {
+          "range": [
+            47,
+            33,
+            41
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#contains()."
+        },
+        {
+          "range": [
+            47,
+            42,
+            47
+          ],
+          "symbol": "local 5"
+        },
+        {
+          "range": [
+            48,
+            9,
+            13
+          ],
+          "symbol": "local 6"
+        },
+        {
+          "range": [
+            48,
+            14,
+            23
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#firstName."
+        },
+        {
+          "range": [
+            48,
+            25,
+            36
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#toLowerCase()."
+        },
+        {
+          "range": [
+            48,
+            39,
+            47
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#contains()."
+        },
+        {
+          "range": [
+            48,
+            48,
+            53
+          ],
+          "symbol": "local 5"
+        },
+        {
+          "range": [
+            49,
+            9,
+            13
+          ],
+          "symbol": "local 6"
+        },
+        {
+          "range": [
+            49,
+            14,
+            22
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#lastName."
+        },
+        {
+          "range": [
+            49,
+            24,
+            35
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#toLowerCase()."
+        },
+        {
+          "range": [
+            49,
+            38,
+            46
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#contains()."
+        },
+        {
+          "range": [
+            49,
+            47,
+            52
+          ],
+          "symbol": "local 5"
+        },
+        {
+          "range": [
+            50,
+            6,
+            12
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`iterable.dart`/Iterable#toList()."
+        },
+        {
+          "range": [
+            53,
+            15,
+            25
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/UserService#updateUser().",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            53,
+            2,
+            8
+          ],
+          "symbol": "scip-dart pub dart:async 3.5.0 dart:async/`future.dart`/Future#"
+        },
+        {
+          "range": [
+            53,
+            33,
+            35
+          ],
+          "symbol": "local 7",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            53,
+            26,
+            32
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#"
+        },
+        {
+          "range": [
+            54,
+            12,
+            20
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/UserService#updateUser().(username)",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            54,
+            4,
+            10
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#"
+        },
+        {
+          "range": [
+            55,
+            12,
+            17
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/UserService#updateUser().(email)",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            55,
+            4,
+            10
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#"
+        },
+        {
+          "range": [
+            56,
+            12,
+            21
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/UserService#updateUser().(firstName)",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            56,
+            4,
+            10
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#"
+        },
+        {
+          "range": [
+            57,
+            12,
+            20
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/UserService#updateUser().(lastName)",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            57,
+            4,
+            10
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#"
+        },
+        {
+          "range": [
+            59,
+            10,
+            16
+          ],
+          "symbol": "scip-dart pub dart:async 3.5.0 dart:async/`future.dart`/Future#"
+        },
+        {
+          "range": [
+            59,
+            17,
+            24
+          ],
+          "symbol": "scip-dart pub dart:async 3.5.0 dart:async/`future.dart`/Future#delayed()."
+        },
+        {
+          "range": [
+            59,
+            31,
+            39
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`duration.dart`/Duration#"
+        },
+        {
+          "range": [
+            59,
+            40,
+            52
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`duration.dart`/Duration#`<constructor>`().(milliseconds)"
+        },
+        {
+          "range": [
+            61,
+            10,
+            15
+          ],
+          "symbol": "local 8",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            61,
+            18,
+            24
+          ],
+          "symbol": "local 0"
+        },
+        {
+          "range": [
+            61,
+            25,
+            35
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`list.dart`/List#indexWhere()."
+        },
+        {
+          "range": [
+            61,
+            37,
+            41
+          ],
+          "symbol": "local 9",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            61,
+            46,
+            50
+          ],
+          "symbol": "local 9"
+        },
+        {
+          "range": [
+            61,
+            51,
+            53
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#id."
+        },
+        {
+          "range": [
+            61,
+            57,
+            59
+          ],
+          "symbol": "local 7"
+        },
+        {
+          "range": [
+            62,
+            8,
+            13
+          ],
+          "symbol": "local 8"
+        },
+        {
+          "range": [
+            63,
+            12,
+            21
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`exceptions.dart`/Exception#"
+        },
+        {
+          "range": [
+            66,
+            8,
+            13
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/UserService#updateUser().(email)"
+        },
+        {
+          "range": [
+            66,
+            26,
+            37
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/utils/`string_utils.dart`/StringUtils#"
+        },
+        {
+          "range": [
+            66,
+            38,
+            50
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/utils/`string_utils.dart`/StringUtils#isValidEmail()."
+        },
+        {
+          "range": [
+            66,
+            51,
+            56
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/UserService#updateUser().(email)"
+        },
+        {
+          "range": [
+            67,
+            12,
+            25
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`errors.dart`/ArgumentError#"
+        },
+        {
+          "range": [
+            70,
+            4,
+            10
+          ],
+          "symbol": "local 0"
+        },
+        {
+          "range": [
+            70,
+            11,
+            16
+          ],
+          "symbol": "local 8"
+        },
+        {
+          "range": [
+            70,
+            20,
+            26
+          ],
+          "symbol": "local 0"
+        },
+        {
+          "range": [
+            70,
+            27,
+            32
+          ],
+          "symbol": "local 8"
+        },
+        {
+          "range": [
+            70,
+            34,
+            42
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#copyWith()."
+        },
+        {
+          "range": [
+            71,
+            6,
+            14
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#copyWith().(username)"
+        },
+        {
+          "range": [
+            71,
+            16,
+            24
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/UserService#updateUser().(username)"
+        },
+        {
+          "range": [
+            72,
+            6,
+            11
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#copyWith().(email)"
+        },
+        {
+          "range": [
+            72,
+            13,
+            18
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/UserService#updateUser().(email)"
+        },
+        {
+          "range": [
+            73,
+            6,
+            15
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#copyWith().(firstName)"
+        },
+        {
+          "range": [
+            73,
+            17,
+            26
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/UserService#updateUser().(firstName)"
+        },
+        {
+          "range": [
+            74,
+            6,
+            14
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#copyWith().(lastName)"
+        },
+        {
+          "range": [
+            74,
+            16,
+            24
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/UserService#updateUser().(lastName)"
+        },
+        {
+          "range": [
+            77,
+            4,
+            15
+          ],
+          "symbol": "local 1"
+        },
+        {
+          "range": [
+            77,
+            16,
+            19
+          ],
+          "symbol": "scip-dart pub dart:async 3.5.0 dart:async/`stream_controller.dart`/StreamController#add()."
+        },
+        {
+          "range": [
+            77,
+            20,
+            26
+          ],
+          "symbol": "local 0"
+        },
+        {
+          "range": [
+            80,
+            15,
+            25
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/UserService#deleteUser().",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            80,
+            2,
+            8
+          ],
+          "symbol": "scip-dart pub dart:async 3.5.0 dart:async/`future.dart`/Future#"
+        },
+        {
+          "range": [
+            80,
+            33,
+            35
+          ],
+          "symbol": "local 10",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            80,
+            26,
+            32
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#"
+        },
+        {
+          "range": [
+            81,
+            10,
+            16
+          ],
+          "symbol": "scip-dart pub dart:async 3.5.0 dart:async/`future.dart`/Future#"
+        },
+        {
+          "range": [
+            81,
+            17,
+            24
+          ],
+          "symbol": "scip-dart pub dart:async 3.5.0 dart:async/`future.dart`/Future#delayed()."
+        },
+        {
+          "range": [
+            81,
+            31,
+            39
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`duration.dart`/Duration#"
+        },
+        {
+          "range": [
+            81,
+            40,
+            52
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`duration.dart`/Duration#`<constructor>`().(milliseconds)"
+        },
+        {
+          "range": [
+            82,
+            4,
+            10
+          ],
+          "symbol": "local 0"
+        },
+        {
+          "range": [
+            82,
+            11,
+            22
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`list.dart`/List#removeWhere()."
+        },
+        {
+          "range": [
+            82,
+            24,
+            28
+          ],
+          "symbol": "local 11",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            82,
+            33,
+            37
+          ],
+          "symbol": "local 11"
+        },
+        {
+          "range": [
+            82,
+            38,
+            40
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#id."
+        },
+        {
+          "range": [
+            82,
+            44,
+            46
+          ],
+          "symbol": "local 10"
+        },
+        {
+          "range": [
+            83,
+            4,
+            15
+          ],
+          "symbol": "local 1"
+        },
+        {
+          "range": [
+            83,
+            16,
+            19
+          ],
+          "symbol": "scip-dart pub dart:async 3.5.0 dart:async/`stream_controller.dart`/StreamController#add()."
+        },
+        {
+          "range": [
+            83,
+            20,
+            26
+          ],
+          "symbol": "local 0"
+        },
+        {
+          "range": [
+            86,
+            7,
+            14
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/UserService#dispose().",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            87,
+            4,
+            15
+          ],
+          "symbol": "local 1"
+        },
+        {
+          "range": [
+            87,
+            16,
+            21
+          ],
+          "symbol": "scip-dart pub dart:async 3.5.0 dart:async/`stream_controller.dart`/StreamController#close()."
+        }
+      ],
+      "symbols": [
+        {
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/"
+        },
+        {
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/UserService#",
+          "kind": "Class"
+        },
+        {
+          "symbol": "local 0",
+          "kind": "Field"
+        },
+        {
+          "symbol": "local 1",
+          "kind": "Field"
+        },
+        {
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/UserService#`<get>usersStream`.",
+          "kind": "Property"
+        },
+        {
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/UserService#createUser().",
+          "kind": "Method"
+        },
+        {
+          "symbol": "local 2"
+        },
+        {
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/UserService#getUserById().",
+          "kind": "Method"
+        },
+        {
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/UserService#searchUsers().",
+          "kind": "Method"
+        },
+        {
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/UserService#updateUser().",
+          "kind": "Method"
+        },
+        {
+          "symbol": "local 8"
+        },
+        {
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/UserService#deleteUser().",
+          "kind": "Method"
+        },
+        {
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/UserService#dispose().",
+          "kind": "Method"
+        }
+      ]
+    },
+    {
+      "relative_path": "test/user_management_test.dart",
+      "occurrences": [
+        {
+          "range": [
+            0,
+            0,
+            0
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/`user_management_test.dart`/",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            5,
+            5,
+            9
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/`user_management_test.dart`/main().",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            6,
+            2,
+            7
+          ],
+          "symbol": "scip-dart pub flutter_test . lib/src/`test_compat.dart`/group()."
+        },
+        {
+          "range": [
+            7,
+            4,
+            8
+          ],
+          "symbol": "scip-dart pub flutter_test . lib/src/`test_compat.dart`/test()."
+        },
+        {
+          "range": [
+            8,
+            12,
+            16
+          ],
+          "symbol": "local 0",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            8,
+            19,
+            23
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#"
+        },
+        {
+          "range": [
+            9,
+            8,
+            10
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#`<constructor>`().(id)"
+        },
+        {
+          "range": [
+            10,
+            8,
+            16
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#`<constructor>`().(username)"
+        },
+        {
+          "range": [
+            11,
+            8,
+            13
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#`<constructor>`().(email)"
+        },
+        {
+          "range": [
+            12,
+            8,
+            17
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#`<constructor>`().(firstName)"
+        },
+        {
+          "range": [
+            13,
+            8,
+            16
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#`<constructor>`().(lastName)"
+        },
+        {
+          "range": [
+            16,
+            12,
+            16
+          ],
+          "symbol": "local 1",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            16,
+            19,
+            23
+          ],
+          "symbol": "local 0"
+        },
+        {
+          "range": [
+            16,
+            24,
+            30
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#toJson()."
+        },
+        {
+          "range": [
+            17,
+            12,
+            24
+          ],
+          "symbol": "local 2",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            17,
+            27,
+            31
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#"
+        },
+        {
+          "range": [
+            17,
+            32,
+            40
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#fromJson()."
+        },
+        {
+          "range": [
+            17,
+            41,
+            45
+          ],
+          "symbol": "local 1"
+        },
+        {
+          "range": [
+            19,
+            6,
+            12
+          ],
+          "symbol": "scip-dart pub flutter_test . lib/src/`widget_tester.dart`/expect()."
+        },
+        {
+          "range": [
+            19,
+            13,
+            25
+          ],
+          "symbol": "local 2"
+        },
+        {
+          "range": [
+            19,
+            26,
+            28
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#id."
+        },
+        {
+          "range": [
+            19,
+            30,
+            36
+          ],
+          "symbol": "scip-dart pub matcher 0.12.16+1 lib/src/`equals_matcher.dart`/equals()."
+        },
+        {
+          "range": [
+            20,
+            6,
+            12
+          ],
+          "symbol": "scip-dart pub flutter_test . lib/src/`widget_tester.dart`/expect()."
+        },
+        {
+          "range": [
+            20,
+            13,
+            25
+          ],
+          "symbol": "local 2"
+        },
+        {
+          "range": [
+            20,
+            26,
+            34
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#username."
+        },
+        {
+          "range": [
+            20,
+            36,
+            42
+          ],
+          "symbol": "scip-dart pub matcher 0.12.16+1 lib/src/`equals_matcher.dart`/equals()."
+        },
+        {
+          "range": [
+            21,
+            6,
+            12
+          ],
+          "symbol": "scip-dart pub flutter_test . lib/src/`widget_tester.dart`/expect()."
+        },
+        {
+          "range": [
+            21,
+            13,
+            25
+          ],
+          "symbol": "local 2"
+        },
+        {
+          "range": [
+            21,
+            26,
+            31
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#email."
+        },
+        {
+          "range": [
+            21,
+            33,
+            39
+          ],
+          "symbol": "scip-dart pub matcher 0.12.16+1 lib/src/`equals_matcher.dart`/equals()."
+        },
+        {
+          "range": [
+            22,
+            6,
+            12
+          ],
+          "symbol": "scip-dart pub flutter_test . lib/src/`widget_tester.dart`/expect()."
+        },
+        {
+          "range": [
+            22,
+            13,
+            25
+          ],
+          "symbol": "local 2"
+        },
+        {
+          "range": [
+            22,
+            26,
+            35
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#firstName."
+        },
+        {
+          "range": [
+            22,
+            37,
+            43
+          ],
+          "symbol": "scip-dart pub matcher 0.12.16+1 lib/src/`equals_matcher.dart`/equals()."
+        },
+        {
+          "range": [
+            23,
+            6,
+            12
+          ],
+          "symbol": "scip-dart pub flutter_test . lib/src/`widget_tester.dart`/expect()."
+        },
+        {
+          "range": [
+            23,
+            13,
+            25
+          ],
+          "symbol": "local 2"
+        },
+        {
+          "range": [
+            23,
+            26,
+            34
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#lastName."
+        },
+        {
+          "range": [
+            23,
+            36,
+            42
+          ],
+          "symbol": "scip-dart pub matcher 0.12.16+1 lib/src/`equals_matcher.dart`/equals()."
+        },
+        {
+          "range": [
+            27,
+            2,
+            7
+          ],
+          "symbol": "scip-dart pub flutter_test . lib/src/`test_compat.dart`/group()."
+        },
+        {
+          "range": [
+            28,
+            9,
+            20
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/UserService#"
+        },
+        {
+          "range": [
+            28,
+            21,
+            32
+          ],
+          "symbol": "local 3",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            30,
+            4,
+            9
+          ],
+          "symbol": "scip-dart pub flutter_test . lib/src/`test_compat.dart`/setUp()."
+        },
+        {
+          "range": [
+            31,
+            6,
+            17
+          ],
+          "symbol": "local 3"
+        },
+        {
+          "range": [
+            31,
+            20,
+            31
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/UserService#"
+        },
+        {
+          "range": [
+            34,
+            4,
+            12
+          ],
+          "symbol": "scip-dart pub flutter_test . lib/src/`test_compat.dart`/tearDown()."
+        },
+        {
+          "range": [
+            35,
+            6,
+            17
+          ],
+          "symbol": "local 3"
+        },
+        {
+          "range": [
+            35,
+            18,
+            25
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/UserService#dispose()."
+        },
+        {
+          "range": [
+            38,
+            4,
+            8
+          ],
+          "symbol": "scip-dart pub flutter_test . lib/src/`test_compat.dart`/test()."
+        },
+        {
+          "range": [
+            39,
+            12,
+            16
+          ],
+          "symbol": "local 4",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            39,
+            25,
+            36
+          ],
+          "symbol": "local 3"
+        },
+        {
+          "range": [
+            39,
+            37,
+            47
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/UserService#createUser()."
+        },
+        {
+          "range": [
+            40,
+            8,
+            16
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/UserService#createUser().(username)"
+        },
+        {
+          "range": [
+            41,
+            8,
+            13
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/UserService#createUser().(email)"
+        },
+        {
+          "range": [
+            42,
+            8,
+            17
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/UserService#createUser().(firstName)"
+        },
+        {
+          "range": [
+            43,
+            8,
+            16
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/UserService#createUser().(lastName)"
+        },
+        {
+          "range": [
+            46,
+            6,
+            12
+          ],
+          "symbol": "scip-dart pub flutter_test . lib/src/`widget_tester.dart`/expect()."
+        },
+        {
+          "range": [
+            46,
+            13,
+            17
+          ],
+          "symbol": "local 4"
+        },
+        {
+          "range": [
+            46,
+            18,
+            26
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#username."
+        },
+        {
+          "range": [
+            46,
+            28,
+            34
+          ],
+          "symbol": "scip-dart pub matcher 0.12.16+1 lib/src/`equals_matcher.dart`/equals()."
+        },
+        {
+          "range": [
+            47,
+            6,
+            12
+          ],
+          "symbol": "scip-dart pub flutter_test . lib/src/`widget_tester.dart`/expect()."
+        },
+        {
+          "range": [
+            47,
+            13,
+            17
+          ],
+          "symbol": "local 4"
+        },
+        {
+          "range": [
+            47,
+            18,
+            23
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/models/`user.dart`/User#email."
+        },
+        {
+          "range": [
+            47,
+            25,
+            31
+          ],
+          "symbol": "scip-dart pub matcher 0.12.16+1 lib/src/`equals_matcher.dart`/equals()."
+        },
+        {
+          "range": [
+            50,
+            4,
+            8
+          ],
+          "symbol": "scip-dart pub flutter_test . lib/src/`test_compat.dart`/test()."
+        },
+        {
+          "range": [
+            51,
+            12,
+            23
+          ],
+          "symbol": "local 3"
+        },
+        {
+          "range": [
+            51,
+            24,
+            34
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/UserService#createUser()."
+        },
+        {
+          "range": [
+            52,
+            8,
+            16
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/UserService#createUser().(username)"
+        },
+        {
+          "range": [
+            53,
+            8,
+            13
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/UserService#createUser().(email)"
+        },
+        {
+          "range": [
+            54,
+            8,
+            17
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/UserService#createUser().(firstName)"
+        },
+        {
+          "range": [
+            55,
+            8,
+            16
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/UserService#createUser().(lastName)"
+        },
+        {
+          "range": [
+            58,
+            12,
+            23
+          ],
+          "symbol": "local 3"
+        },
+        {
+          "range": [
+            58,
+            24,
+            34
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/UserService#createUser()."
+        },
+        {
+          "range": [
+            59,
+            8,
+            16
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/UserService#createUser().(username)"
+        },
+        {
+          "range": [
+            60,
+            8,
+            13
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/UserService#createUser().(email)"
+        },
+        {
+          "range": [
+            61,
+            8,
+            17
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/UserService#createUser().(firstName)"
+        },
+        {
+          "range": [
+            62,
+            8,
+            16
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/UserService#createUser().(lastName)"
+        },
+        {
+          "range": [
+            65,
+            12,
+            19
+          ],
+          "symbol": "local 5",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            65,
+            28,
+            39
+          ],
+          "symbol": "local 3"
+        },
+        {
+          "range": [
+            65,
+            40,
+            51
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/services/`user_service.dart`/UserService#searchUsers()."
+        },
+        {
+          "range": [
+            66,
+            6,
+            12
+          ],
+          "symbol": "scip-dart pub flutter_test . lib/src/`widget_tester.dart`/expect()."
+        },
+        {
+          "range": [
+            66,
+            13,
+            20
+          ],
+          "symbol": "local 5"
+        },
+        {
+          "range": [
+            66,
+            21,
+            27
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`list.dart`/List#`<get>length`."
+        },
+        {
+          "range": [
+            66,
+            29,
+            35
+          ],
+          "symbol": "scip-dart pub matcher 0.12.16+1 lib/src/`equals_matcher.dart`/equals()."
+        },
+        {
+          "range": [
+            70,
+            2,
+            7
+          ],
+          "symbol": "scip-dart pub flutter_test . lib/src/`test_compat.dart`/group()."
+        },
+        {
+          "range": [
+            71,
+            4,
+            8
+          ],
+          "symbol": "scip-dart pub flutter_test . lib/src/`test_compat.dart`/test()."
+        },
+        {
+          "range": [
+            72,
+            6,
+            12
+          ],
+          "symbol": "scip-dart pub flutter_test . lib/src/`widget_tester.dart`/expect()."
+        },
+        {
+          "range": [
+            72,
+            13,
+            24
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/utils/`string_utils.dart`/StringUtils#"
+        },
+        {
+          "range": [
+            72,
+            25,
+            37
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/utils/`string_utils.dart`/StringUtils#isValidEmail()."
+        },
+        {
+          "range": [
+            72,
+            59,
+            65
+          ],
+          "symbol": "scip-dart pub matcher 0.12.16+1 lib/src/`core_matchers.dart`/isTrue."
+        },
+        {
+          "range": [
+            73,
+            6,
+            12
+          ],
+          "symbol": "scip-dart pub flutter_test . lib/src/`widget_tester.dart`/expect()."
+        },
+        {
+          "range": [
+            73,
+            13,
+            24
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/utils/`string_utils.dart`/StringUtils#"
+        },
+        {
+          "range": [
+            73,
+            25,
+            37
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/utils/`string_utils.dart`/StringUtils#isValidEmail()."
+        },
+        {
+          "range": [
+            73,
+            56,
+            63
+          ],
+          "symbol": "scip-dart pub matcher 0.12.16+1 lib/src/`core_matchers.dart`/isFalse."
+        },
+        {
+          "range": [
+            76,
+            4,
+            8
+          ],
+          "symbol": "scip-dart pub flutter_test . lib/src/`test_compat.dart`/test()."
+        },
+        {
+          "range": [
+            77,
+            6,
+            12
+          ],
+          "symbol": "scip-dart pub flutter_test . lib/src/`widget_tester.dart`/expect()."
+        },
+        {
+          "range": [
+            77,
+            13,
+            24
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/utils/`string_utils.dart`/StringUtils#"
+        },
+        {
+          "range": [
+            77,
+            25,
+            35
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/utils/`string_utils.dart`/StringUtils#capitalize()."
+        },
+        {
+          "range": [
+            77,
+            46,
+            52
+          ],
+          "symbol": "scip-dart pub matcher 0.12.16+1 lib/src/`equals_matcher.dart`/equals()."
+        },
+        {
+          "range": [
+            78,
+            6,
+            12
+          ],
+          "symbol": "scip-dart pub flutter_test . lib/src/`widget_tester.dart`/expect()."
+        },
+        {
+          "range": [
+            78,
+            13,
+            24
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/utils/`string_utils.dart`/StringUtils#"
+        },
+        {
+          "range": [
+            78,
+            25,
+            36
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/utils/`string_utils.dart`/StringUtils#toTitleCase()."
+        },
+        {
+          "range": [
+            78,
+            53,
+            59
+          ],
+          "symbol": "scip-dart pub matcher 0.12.16+1 lib/src/`equals_matcher.dart`/equals()."
+        },
+        {
+          "range": [
+            81,
+            4,
+            8
+          ],
+          "symbol": "scip-dart pub flutter_test . lib/src/`test_compat.dart`/test()."
+        },
+        {
+          "range": [
+            82,
+            6,
+            12
+          ],
+          "symbol": "scip-dart pub flutter_test . lib/src/`widget_tester.dart`/expect()."
+        },
+        {
+          "range": [
+            83,
+            8,
+            19
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/utils/`string_utils.dart`/StringUtils#"
+        },
+        {
+          "range": [
+            83,
+            20,
+            27
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/utils/`string_utils.dart`/StringUtils#slugify()."
+        },
+        {
+          "range": [
+            84,
+            8,
+            14
+          ],
+          "symbol": "scip-dart pub matcher 0.12.16+1 lib/src/`equals_matcher.dart`/equals()."
+        }
+      ],
+      "symbols": [
+        {
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/`user_management_test.dart`/"
+        },
+        {
+          "symbol": "scip-dart pub test_project 1.0.0+1 test/`user_management_test.dart`/main().",
+          "kind": "Function"
+        },
+        {
+          "symbol": "local 0"
+        },
+        {
+          "symbol": "local 1"
+        },
+        {
+          "symbol": "local 2"
+        },
+        {
+          "symbol": "local 3"
+        },
+        {
+          "symbol": "local 4"
+        },
+        {
+          "symbol": "local 5"
+        }
+      ]
+    },
+    {
+      "relative_path": "lib/main.dart",
+      "occurrences": [
+        {
+          "range": [
+            0,
+            0,
+            0
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 lib/`main.dart`/",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            2,
+            5,
+            9
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 lib/`main.dart`/main().",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            3,
+            2,
+            8
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/widgets/`binding.dart`/runApp()."
+        },
+        {
+          "range": [
+            3,
+            15,
+            20
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 lib/`main.dart`/MyApp#"
+        },
+        {
+          "range": [
+            6,
+            6,
+            11
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 lib/`main.dart`/MyApp#",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            6,
+            20,
+            35
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/widgets/`framework.dart`/StatelessWidget#"
+        },
+        {
+          "range": [
+            7,
+            8,
+            13
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 lib/`main.dart`/MyApp#`<constructor>`().",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            7,
+            8,
+            13
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 lib/`main.dart`/MyApp#"
+        },
+        {
+          "range": [
+            7,
+            21,
+            24
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 lib/`main.dart`/MyApp#`<constructor>`().(key)",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            11,
+            9,
+            14
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 lib/`main.dart`/MyApp#build().",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            10,
+            3,
+            11
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`annotations.dart`/override."
+        },
+        {
+          "range": [
+            11,
+            2,
+            8
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/widgets/`framework.dart`/Widget#"
+        },
+        {
+          "range": [
+            11,
+            28,
+            35
+          ],
+          "symbol": "local 0",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            11,
+            15,
+            27
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/widgets/`framework.dart`/BuildContext#"
+        },
+        {
+          "range": [
+            12,
+            11,
+            22
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/material/`app.dart`/MaterialApp#"
+        },
+        {
+          "range": [
+            13,
+            6,
+            11
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/material/`app.dart`/MaterialApp#`<constructor>`().(title)"
+        },
+        {
+          "range": [
+            14,
+            6,
+            11
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/material/`app.dart`/MaterialApp#`<constructor>`().(theme)"
+        },
+        {
+          "range": [
+            14,
+            13,
+            22
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/material/`theme_data.dart`/ThemeData#"
+        },
+        {
+          "range": [
+            30,
+            8,
+            19
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/material/`theme_data.dart`/ThemeData#`<constructor>`().(colorScheme)"
+        },
+        {
+          "range": [
+            30,
+            21,
+            32
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/material/`color_scheme.dart`/ColorScheme#"
+        },
+        {
+          "range": [
+            30,
+            33,
+            41
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/material/`color_scheme.dart`/ColorScheme#fromSeed()."
+        },
+        {
+          "range": [
+            30,
+            42,
+            51
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/material/`color_scheme.dart`/ColorScheme#fromSeed().(seedColor)"
+        },
+        {
+          "range": [
+            30,
+            53,
+            59
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/material/`colors.dart`/Colors#"
+        },
+        {
+          "range": [
+            30,
+            60,
+            70
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/material/`colors.dart`/Colors#deepPurple."
+        },
+        {
+          "range": [
+            31,
+            8,
+            20
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/material/`theme_data.dart`/ThemeData#`<constructor>`().(useMaterial3)"
+        },
+        {
+          "range": [
+            33,
+            6,
+            10
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/material/`app.dart`/MaterialApp#`<constructor>`().(home)"
+        },
+        {
+          "range": [
+            33,
+            18,
+            28
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 lib/`main.dart`/MyHomePage#"
+        },
+        {
+          "range": [
+            33,
+            29,
+            34
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 lib/`main.dart`/MyHomePage#`<constructor>`().(title)"
+        },
+        {
+          "range": [
+            38,
+            6,
+            16
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 lib/`main.dart`/MyHomePage#",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            38,
+            25,
+            39
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/widgets/`framework.dart`/StatefulWidget#"
+        },
+        {
+          "range": [
+            39,
+            8,
+            18
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 lib/`main.dart`/MyHomePage#`<constructor>`().",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            39,
+            8,
+            18
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 lib/`main.dart`/MyHomePage#"
+        },
+        {
+          "range": [
+            39,
+            26,
+            29
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 lib/`main.dart`/MyHomePage#`<constructor>`().(key)",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            39,
+            45,
+            50
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 lib/`main.dart`/MyHomePage#title."
+        },
+        {
+          "range": [
+            39,
+            45,
+            50
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 lib/`main.dart`/MyHomePage#`<constructor>`().(title)",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            50,
+            8,
+            14
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#"
+        },
+        {
+          "range": [
+            50,
+            15,
+            20
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 lib/`main.dart`/MyHomePage#title.",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            53,
+            20,
+            31
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 lib/`main.dart`/MyHomePage#createState().",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            52,
+            3,
+            11
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`annotations.dart`/override."
+        },
+        {
+          "range": [
+            53,
+            2,
+            7
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/widgets/`framework.dart`/State#"
+        },
+        {
+          "range": [
+            53,
+            8,
+            18
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 lib/`main.dart`/MyHomePage#"
+        },
+        {
+          "range": [
+            53,
+            37,
+            53
+          ],
+          "symbol": "local 1"
+        },
+        {
+          "range": [
+            56,
+            6,
+            22
+          ],
+          "symbol": "local 1",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            56,
+            31,
+            36
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/widgets/`framework.dart`/State#"
+        },
+        {
+          "range": [
+            56,
+            37,
+            47
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 lib/`main.dart`/MyHomePage#"
+        },
+        {
+          "range": [
+            57,
+            2,
+            5
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`int.dart`/int#"
+        },
+        {
+          "range": [
+            57,
+            6,
+            14
+          ],
+          "symbol": "local 2",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            59,
+            7,
+            24
+          ],
+          "symbol": "local 3",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            60,
+            4,
+            12
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/widgets/`framework.dart`/State#setState()."
+        },
+        {
+          "range": [
+            66,
+            6,
+            14
+          ],
+          "symbol": "local 2"
+        },
+        {
+          "range": [
+            71,
+            9,
+            14
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 lib/`main.dart`/_MyHomePageState#build().",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            70,
+            3,
+            11
+          ],
+          "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`annotations.dart`/override."
+        },
+        {
+          "range": [
+            71,
+            2,
+            8
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/widgets/`framework.dart`/Widget#"
+        },
+        {
+          "range": [
+            71,
+            28,
+            35
+          ],
+          "symbol": "local 4",
+          "symbol_roles": 1
+        },
+        {
+          "range": [
+            71,
+            15,
+            27
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/widgets/`framework.dart`/BuildContext#"
+        },
+        {
+          "range": [
+            78,
+            11,
+            19
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/material/`scaffold.dart`/Scaffold#"
+        },
+        {
+          "range": [
+            79,
+            6,
+            12
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/material/`scaffold.dart`/Scaffold#`<constructor>`().(appBar)"
+        },
+        {
+          "range": [
+            79,
+            14,
+            20
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/material/`app_bar.dart`/AppBar#"
+        },
+        {
+          "range": [
+            83,
+            8,
+            23
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/material/`app_bar.dart`/AppBar#`<constructor>`().(backgroundColor)"
+        },
+        {
+          "range": [
+            83,
+            25,
+            30
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/material/`theme.dart`/Theme#"
+        },
+        {
+          "range": [
+            83,
+            31,
+            33
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/material/`theme.dart`/Theme#of()."
+        },
+        {
+          "range": [
+            83,
+            34,
+            41
+          ],
+          "symbol": "local 4"
+        },
+        {
+          "range": [
+            83,
+            43,
+            54
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/material/`theme_data.dart`/ThemeData#colorScheme."
+        },
+        {
+          "range": [
+            83,
+            55,
+            69
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/material/`color_scheme.dart`/ColorScheme#`<get>inversePrimary`."
+        },
+        {
+          "range": [
+            86,
+            8,
+            13
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/material/`app_bar.dart`/AppBar#`<constructor>`().(title)"
+        },
+        {
+          "range": [
+            86,
+            15,
+            19
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/widgets/`text.dart`/Text#"
+        },
+        {
+          "range": [
+            86,
+            20,
+            26
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/widgets/`framework.dart`/State#`<get>widget`."
+        },
+        {
+          "range": [
+            86,
+            27,
+            32
+          ],
+          "symbol": "scip-dart pub test_project 1.0.0+1 lib/`main.dart`/MyHomePage#title."
+        },
+        {
+          "range": [
+            88,
+            6,
+            10
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/material/`scaffold.dart`/Scaffold#`<constructor>`().(body)"
+        },
+        {
+          "range": [
+            88,
+            12,
+            18
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/widgets/`basic.dart`/Center#"
+        },
+        {
+          "range": [
+            91,
+            8,
+            13
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/widgets/`basic.dart`/Center#`<constructor>`().(child)"
+        },
+        {
+          "range": [
+            91,
+            15,
+            21
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/widgets/`basic.dart`/Column#"
+        },
+        {
+          "range": [
+            105,
+            10,
+            27
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/widgets/`basic.dart`/Column#`<constructor>`().(mainAxisAlignment)"
+        },
+        {
+          "range": [
+            105,
+            29,
+            46
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/rendering/`flex.dart`/MainAxisAlignment#"
+        },
+        {
+          "range": [
+            105,
+            47,
+            53
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/rendering/`flex.dart`/MainAxisAlignment#center."
+        },
+        {
+          "range": [
+            106,
+            10,
+            18
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/widgets/`basic.dart`/Column#`<constructor>`().(children)"
+        },
+        {
+          "range": [
+            106,
+            21,
+            27
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/widgets/`framework.dart`/Widget#"
+        },
+        {
+          "range": [
+            107,
+            18,
+            22
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/widgets/`text.dart`/Text#"
+        },
+        {
+          "range": [
+            110,
+            12,
+            16
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/widgets/`text.dart`/Text#"
+        },
+        {
+          "range": [
+            111,
+            16,
+            24
+          ],
+          "symbol": "local 2"
+        },
+        {
+          "range": [
+            112,
+            14,
+            19
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/widgets/`text.dart`/Text#`<constructor>`().(style)"
+        },
+        {
+          "range": [
+            112,
+            21,
+            26
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/material/`theme.dart`/Theme#"
+        },
+        {
+          "range": [
+            112,
+            27,
+            29
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/material/`theme.dart`/Theme#of()."
+        },
+        {
+          "range": [
+            112,
+            30,
+            37
+          ],
+          "symbol": "local 4"
+        },
+        {
+          "range": [
+            112,
+            39,
+            48
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/material/`theme_data.dart`/ThemeData#textTheme."
+        },
+        {
+          "range": [
+            112,
+            49,
+            63
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/material/`text_theme.dart`/TextTheme#headlineMedium."
+        },
+        {
+          "range": [
+            117,
+            6,
+            26
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/material/`scaffold.dart`/Scaffold#`<constructor>`().(floatingActionButton)"
+        },
+        {
+          "range": [
+            117,
+            28,
+            48
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/material/`floating_action_button.dart`/FloatingActionButton#"
+        },
+        {
+          "range": [
+            118,
+            8,
+            17
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/material/`floating_action_button.dart`/FloatingActionButton#`<constructor>`().(onPressed)"
+        },
+        {
+          "range": [
+            118,
+            19,
+            36
+          ],
+          "symbol": "local 3"
+        },
+        {
+          "range": [
+            119,
+            8,
+            15
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/material/`floating_action_button.dart`/FloatingActionButton#`<constructor>`().(tooltip)"
+        },
+        {
+          "range": [
+            120,
+            8,
+            13
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/material/`floating_action_button.dart`/FloatingActionButton#`<constructor>`().(child)"
+        },
+        {
+          "range": [
+            120,
+            21,
+            25
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/widgets/`icon.dart`/Icon#"
+        },
+        {
+          "range": [
+            120,
+            26,
+            31
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/material/`icons.dart`/Icons#"
+        },
+        {
+          "range": [
+            120,
+            32,
+            35
+          ],
+          "symbol": "scip-dart pub flutter . lib/src/material/`icons.dart`/Icons#add."
+        }
+      ],
+      "symbols": [
+        {
+          "symbol": "scip-dart pub test_project 1.0.0+1 lib/`main.dart`/"
+        },
+        {
+          "symbol": "scip-dart pub test_project 1.0.0+1 lib/`main.dart`/main().",
+          "kind": "Function"
+        },
+        {
+          "symbol": "scip-dart pub test_project 1.0.0+1 lib/`main.dart`/MyApp#",
+          "relationships": [
+            {
+              "symbol": "scip-dart pub flutter . lib/src/widgets/`framework.dart`/StatelessWidget#",
+              "is_implementation": true
+            },
+            {
+              "symbol": "scip-dart pub flutter . lib/src/widgets/`framework.dart`/Widget#",
+              "is_implementation": true
+            },
+            {
+              "symbol": "scip-dart pub flutter . lib/src/foundation/`diagnostics.dart`/DiagnosticableTree#",
+              "is_implementation": true
+            },
+            {
+              "symbol": "scip-dart pub flutter . lib/src/foundation/`diagnostics.dart`/Diagnosticable#",
+              "is_implementation": true
+            }
+          ],
+          "kind": "Class"
+        },
+        {
+          "symbol": "scip-dart pub test_project 1.0.0+1 lib/`main.dart`/MyApp#`<constructor>`().",
+          "kind": "Constructor"
+        },
+        {
+          "symbol": "scip-dart pub test_project 1.0.0+1 lib/`main.dart`/MyApp#build().",
+          "relationships": [
+            {
+              "symbol": "scip-dart pub flutter . lib/src/widgets/`framework.dart`/StatelessWidget#build().",
+              "is_reference": true,
+              "is_implementation": true
+            }
+          ],
+          "kind": "Method"
+        },
+        {
+          "symbol": "scip-dart pub test_project 1.0.0+1 lib/`main.dart`/MyHomePage#",
+          "relationships": [
+            {
+              "symbol": "scip-dart pub flutter . lib/src/widgets/`framework.dart`/StatefulWidget#",
+              "is_implementation": true
+            },
+            {
+              "symbol": "scip-dart pub flutter . lib/src/widgets/`framework.dart`/Widget#",
+              "is_implementation": true
+            },
+            {
+              "symbol": "scip-dart pub flutter . lib/src/foundation/`diagnostics.dart`/DiagnosticableTree#",
+              "is_implementation": true
+            },
+            {
+              "symbol": "scip-dart pub flutter . lib/src/foundation/`diagnostics.dart`/Diagnosticable#",
+              "is_implementation": true
+            }
+          ],
+          "kind": "Class"
+        },
+        {
+          "symbol": "scip-dart pub test_project 1.0.0+1 lib/`main.dart`/MyHomePage#`<constructor>`().",
+          "kind": "Constructor"
+        },
+        {
+          "symbol": "scip-dart pub test_project 1.0.0+1 lib/`main.dart`/MyHomePage#title.",
+          "kind": "Field"
+        },
+        {
+          "symbol": "scip-dart pub test_project 1.0.0+1 lib/`main.dart`/MyHomePage#createState().",
+          "relationships": [
+            {
+              "symbol": "scip-dart pub flutter . lib/src/widgets/`framework.dart`/StatefulWidget#createState().",
+              "is_reference": true,
+              "is_implementation": true
+            }
+          ],
+          "kind": "Method"
+        },
+        {
+          "symbol": "local 1",
+          "relationships": [
+            {
+              "symbol": "scip-dart pub flutter . lib/src/widgets/`framework.dart`/State#",
+              "is_implementation": true
+            },
+            {
+              "symbol": "scip-dart pub flutter . lib/src/foundation/`diagnostics.dart`/Diagnosticable#",
+              "is_implementation": true
+            }
+          ],
+          "kind": "Class"
+        },
+        {
+          "symbol": "local 2",
+          "kind": "Field"
+        },
+        {
+          "symbol": "local 3",
+          "kind": "Method"
+        },
+        {
+          "symbol": "scip-dart pub test_project 1.0.0+1 lib/`main.dart`/_MyHomePageState#build().",
+          "relationships": [
+            {
+              "symbol": "scip-dart pub flutter . lib/src/widgets/`framework.dart`/State#build().",
+              "is_reference": true,
+              "is_implementation": true
+            }
+          ],
+          "kind": "Method"
+        }
+      ]
+    }
+  ],
+  "external_symbols": [
+    {
+      "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`bool.dart`/bool#",
+      "kind": "Class"
+    },
+    {
+      "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#",
+      "kind": "Class"
+    },
+    {
+      "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`regexp.dart`/RegExp#",
+      "kind": "Class"
+    },
+    {
+      "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`regexp.dart`/RegExp#hasMatch().",
+      "kind": "Method"
+    },
+    {
+      "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#`<get>isEmpty`.",
+      "kind": "Property"
+    },
+    {
+      "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#toUpperCase().",
+      "kind": "Method"
+    },
+    {
+      "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#substring().",
+      "kind": "Method"
+    },
+    {
+      "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#split().",
+      "kind": "Method"
+    },
+    {
+      "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`iterable.dart`/Iterable#map().",
+      "kind": "Method"
+    },
+    {
+      "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#toLowerCase().",
+      "kind": "Method"
+    },
+    {
+      "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`iterable.dart`/Iterable#join().",
+      "kind": "Method"
+    },
+    {
+      "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`int.dart`/int#",
+      "kind": "Class"
+    },
+    {
+      "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#`<get>length`.",
+      "kind": "Property"
+    },
+    {
+      "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#replaceAll().",
+      "kind": "Method"
+    },
+    {
+      "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`date_time.dart`/DateTime#",
+      "kind": "Class"
+    },
+    {
+      "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`map.dart`/Map#",
+      "kind": "Class"
+    },
+    {
+      "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`date_time.dart`/DateTime#parse().",
+      "kind": "Method"
+    },
+    {
+      "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`date_time.dart`/DateTime#toIso8601String().",
+      "kind": "Method"
+    },
+    {
+      "symbol": "scip-dart pub flutter_test . lib/src/`widget_tester.dart`/testWidgets().",
+      "kind": "Function"
+    },
+    {
+      "symbol": "scip-dart pub flutter_test . lib/src/`widget_tester.dart`/WidgetTester#",
+      "kind": "Class"
+    },
+    {
+      "symbol": "scip-dart pub flutter_test . lib/src/`widget_tester.dart`/WidgetTester#pumpWidget().",
+      "kind": "Method"
+    },
+    {
+      "symbol": "scip-dart pub flutter_test . lib/src/`widget_tester.dart`/expect().",
+      "kind": "Function"
+    },
+    {
+      "symbol": "scip-dart pub flutter_test . lib/src/`finders.dart`/find.",
+      "kind": "Variable"
+    },
+    {
+      "symbol": "scip-dart pub flutter_test . lib/src/`finders.dart`/CommonFinders#text().",
+      "kind": "Method"
+    },
+    {
+      "symbol": "scip-dart pub flutter_test . lib/src/`matchers.dart`/findsOneWidget.",
+      "kind": "Variable"
+    },
+    {
+      "symbol": "scip-dart pub flutter_test . lib/src/`matchers.dart`/findsNothing.",
+      "kind": "Variable"
+    },
+    {
+      "symbol": "scip-dart pub flutter_test . lib/src/`controller.dart`/WidgetController#tap().",
+      "kind": "Method"
+    },
+    {
+      "symbol": "scip-dart pub flutter_test . lib/src/`finders.dart`/CommonFinders#byIcon().",
+      "kind": "Method"
+    },
+    {
+      "symbol": "scip-dart pub flutter . lib/src/material/`icons.dart`/Icons#",
+      "kind": "Class"
+    },
+    {
+      "symbol": "scip-dart pub flutter . lib/src/material/`icons.dart`/Icons#add.",
+      "kind": "Field"
+    },
+    {
+      "symbol": "scip-dart pub flutter_test . lib/src/`widget_tester.dart`/WidgetTester#pump().",
+      "kind": "Method"
+    },
+    {
+      "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`list.dart`/List#",
+      "kind": "Class"
+    },
+    {
+      "symbol": "scip-dart pub dart:async 3.5.0 dart:async/`stream_controller.dart`/StreamController#",
+      "kind": "Class"
+    },
+    {
+      "symbol": "scip-dart pub dart:async 3.5.0 dart:async/`stream_controller.dart`/StreamController#broadcast().",
+      "kind": "Constructor"
+    },
+    {
+      "symbol": "scip-dart pub dart:async 3.5.0 dart:async/`stream.dart`/Stream#",
+      "kind": "Class"
+    },
+    {
+      "symbol": "scip-dart pub dart:async 3.5.0 dart:async/`stream_controller.dart`/StreamController#`<get>stream`.",
+      "kind": "Property"
+    },
+    {
+      "symbol": "scip-dart pub dart:async 3.5.0 dart:async/`future.dart`/Future#",
+      "kind": "Class"
+    },
+    {
+      "symbol": "scip-dart pub dart:async 3.5.0 dart:async/`future.dart`/Future#delayed().",
+      "kind": "Constructor"
+    },
+    {
+      "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`duration.dart`/Duration#",
+      "kind": "Class"
+    },
+    {
+      "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`errors.dart`/ArgumentError#",
+      "kind": "Class"
+    },
+    {
+      "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`date_time.dart`/DateTime#now().",
+      "kind": "Constructor"
+    },
+    {
+      "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`date_time.dart`/DateTime#`<get>millisecondsSinceEpoch`.",
+      "kind": "Property"
+    },
+    {
+      "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`int.dart`/int#toString().",
+      "kind": "Method"
+    },
+    {
+      "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`list.dart`/List#add().",
+      "kind": "Method"
+    },
+    {
+      "symbol": "scip-dart pub dart:async 3.5.0 dart:async/`stream_controller.dart`/StreamController#add().",
+      "kind": "Method"
+    },
+    {
+      "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`iterable.dart`/Iterable#firstWhere().",
+      "kind": "Method"
+    },
+    {
+      "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`iterable.dart`/Iterable#where().",
+      "kind": "Method"
+    },
+    {
+      "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`string.dart`/String#contains().",
+      "kind": "Method"
+    },
+    {
+      "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`iterable.dart`/Iterable#toList().",
+      "kind": "Method"
+    },
+    {
+      "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`list.dart`/List#indexWhere().",
+      "kind": "Method"
+    },
+    {
+      "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`exceptions.dart`/Exception#",
+      "kind": "Class"
+    },
+    {
+      "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`list.dart`/List#removeWhere().",
+      "kind": "Method"
+    },
+    {
+      "symbol": "scip-dart pub dart:async 3.5.0 dart:async/`stream_controller.dart`/StreamController#close().",
+      "kind": "Method"
+    },
+    {
+      "symbol": "scip-dart pub flutter_test . lib/src/`test_compat.dart`/group().",
+      "kind": "Function"
+    },
+    {
+      "symbol": "scip-dart pub flutter_test . lib/src/`test_compat.dart`/test().",
+      "kind": "Function"
+    },
+    {
+      "symbol": "scip-dart pub matcher 0.12.16+1 lib/src/`equals_matcher.dart`/equals().",
+      "kind": "Function"
+    },
+    {
+      "symbol": "scip-dart pub flutter_test . lib/src/`test_compat.dart`/setUp().",
+      "kind": "Function"
+    },
+    {
+      "symbol": "scip-dart pub flutter_test . lib/src/`test_compat.dart`/tearDown().",
+      "kind": "Function"
+    },
+    {
+      "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`list.dart`/List#`<get>length`.",
+      "kind": "Property"
+    },
+    {
+      "symbol": "scip-dart pub matcher 0.12.16+1 lib/src/`core_matchers.dart`/isTrue.",
+      "kind": "Variable"
+    },
+    {
+      "symbol": "scip-dart pub matcher 0.12.16+1 lib/src/`core_matchers.dart`/isFalse.",
+      "kind": "Variable"
+    },
+    {
+      "symbol": "scip-dart pub flutter . lib/src/widgets/`binding.dart`/runApp().",
+      "kind": "Function"
+    },
+    {
+      "symbol": "scip-dart pub flutter . lib/src/widgets/`framework.dart`/StatelessWidget#",
+      "kind": "Class"
+    },
+    {
+      "symbol": "scip-dart pub dart:core 3.5.0 dart:core/`annotations.dart`/override.",
+      "kind": "Variable"
+    },
+    {
+      "symbol": "scip-dart pub flutter . lib/src/widgets/`framework.dart`/Widget#",
+      "kind": "Class"
+    },
+    {
+      "symbol": "scip-dart pub flutter . lib/src/widgets/`framework.dart`/BuildContext#",
+      "kind": "Class"
+    },
+    {
+      "symbol": "scip-dart pub flutter . lib/src/material/`app.dart`/MaterialApp#",
+      "kind": "Class"
+    },
+    {
+      "symbol": "scip-dart pub flutter . lib/src/material/`theme_data.dart`/ThemeData#",
+      "kind": "Class"
+    },
+    {
+      "symbol": "scip-dart pub flutter . lib/src/material/`color_scheme.dart`/ColorScheme#",
+      "kind": "Class"
+    },
+    {
+      "symbol": "scip-dart pub flutter . lib/src/material/`color_scheme.dart`/ColorScheme#fromSeed().",
+      "kind": "Constructor"
+    },
+    {
+      "symbol": "scip-dart pub flutter . lib/src/material/`colors.dart`/Colors#",
+      "kind": "Class"
+    },
+    {
+      "symbol": "scip-dart pub flutter . lib/src/material/`colors.dart`/Colors#deepPurple.",
+      "kind": "Field"
+    },
+    {
+      "symbol": "scip-dart pub flutter . lib/src/widgets/`framework.dart`/StatefulWidget#",
+      "kind": "Class"
+    },
+    {
+      "symbol": "scip-dart pub flutter . lib/src/widgets/`framework.dart`/State#",
+      "kind": "Class"
+    },
+    {
+      "symbol": "scip-dart pub flutter . lib/src/widgets/`framework.dart`/State#setState().",
+      "kind": "Method"
+    },
+    {
+      "symbol": "scip-dart pub flutter . lib/src/material/`scaffold.dart`/Scaffold#",
+      "kind": "Class"
+    },
+    {
+      "symbol": "scip-dart pub flutter . lib/src/material/`app_bar.dart`/AppBar#",
+      "kind": "Class"
+    },
+    {
+      "symbol": "scip-dart pub flutter . lib/src/material/`theme.dart`/Theme#",
+      "kind": "Class"
+    },
+    {
+      "symbol": "scip-dart pub flutter . lib/src/material/`theme.dart`/Theme#of().",
+      "kind": "Method"
+    },
+    {
+      "symbol": "scip-dart pub flutter . lib/src/material/`theme_data.dart`/ThemeData#colorScheme.",
+      "kind": "Field"
+    },
+    {
+      "symbol": "scip-dart pub flutter . lib/src/material/`color_scheme.dart`/ColorScheme#`<get>inversePrimary`.",
+      "kind": "Property"
+    },
+    {
+      "symbol": "scip-dart pub flutter . lib/src/widgets/`text.dart`/Text#",
+      "kind": "Class"
+    },
+    {
+      "symbol": "scip-dart pub flutter . lib/src/widgets/`framework.dart`/State#`<get>widget`.",
+      "kind": "Property"
+    },
+    {
+      "symbol": "scip-dart pub flutter . lib/src/widgets/`basic.dart`/Center#",
+      "kind": "Class"
+    },
+    {
+      "symbol": "scip-dart pub flutter . lib/src/widgets/`basic.dart`/Column#",
+      "kind": "Class"
+    },
+    {
+      "symbol": "scip-dart pub flutter . lib/src/rendering/`flex.dart`/MainAxisAlignment#",
+      "kind": "Enum"
+    },
+    {
+      "symbol": "scip-dart pub flutter . lib/src/rendering/`flex.dart`/MainAxisAlignment#center.",
+      "kind": "Field"
+    },
+    {
+      "symbol": "scip-dart pub flutter . lib/src/material/`theme_data.dart`/ThemeData#textTheme.",
+      "kind": "Field"
+    },
+    {
+      "symbol": "scip-dart pub flutter . lib/src/material/`text_theme.dart`/TextTheme#headlineMedium.",
+      "kind": "Field"
+    },
+    {
+      "symbol": "scip-dart pub flutter . lib/src/material/`floating_action_button.dart`/FloatingActionButton#",
+      "kind": "Class"
+    },
+    {
+      "symbol": "scip-dart pub flutter . lib/src/widgets/`icon.dart`/Icon#",
+      "kind": "Class"
+    }
+  ]
+}
