@@ -263,68 +263,73 @@ class SCIPProcessor:
 
     def _process_occurrences(self, documents: List[scip_pb2.Document]) -> None:
         """Process symbol occurrences and their locations."""
+        # Track method definitions to avoid duplicate processing
+        method_definitions = {}  # (file_id, start_line, start_col) -> symbol_id
+        
         for doc in documents:
             if not doc.relative_path or doc.relative_path not in self.file_id_map:
                 continue  # Skip if we can't find the document
                 
             file_id = self.file_id_map[doc.relative_path]
             
+            # First pass: Record all method definitions
             for occurrence in doc.occurrences:
                 if occurrence.symbol not in self.symbol_id_map:
-                    continue  # Skip if we can't find the symbol
+                    continue
+                    
+                symbol_id = self.symbol_id_map[occurrence.symbol]
+                roles = occurrence.symbol_roles
+                sym_kind = self.symbol_kind_map.get(occurrence.symbol)
+                
+                # If this is a method definition, record its location
+                if (roles & 0x1) != 0 and sym_kind in self.method_like_kinds:
+                    start_line = occurrence.range[0] + 1
+                    start_col = occurrence.range[1] + 1
+                    method_definitions[(file_id, start_line, start_col)] = symbol_id
+            
+            # Second pass: Process all occurrences
+            for occurrence in doc.occurrences:
+                if occurrence.symbol not in self.symbol_id_map:
+                    continue
                     
                 symbol_id = self.symbol_id_map[occurrence.symbol]
                 
                 try:
                     # Record the symbol location
-                    start_line = occurrence.range[0]
-                    start_col = occurrence.range[1]
-                    end_line = occurrence.range[2] if len(occurrence.range) > 3 else start_line
-                    end_col = occurrence.range[3] if len(occurrence.range) > 3 else occurrence.range[2]
+                    start_line = occurrence.range[0] + 1  # Convert to 1-based indexing
+                    start_col = occurrence.range[1] + 1
+                    end_line = occurrence.range[2] + 1 if len(occurrence.range) > 3 else start_line
+                    end_col = occurrence.range[3] + 1 if len(occurrence.range) > 3 else occurrence.range[2] + 1
                     
-                    self.db.record_symbol_location(
-                        symbol_id=symbol_id,
-                        file_id=file_id,
-                        start_line=start_line + 1,  # Convert to 1-based indexing
-                        start_column=start_col + 1,
-                        end_line=end_line + 1,
-                        end_column=end_col + 1
-                    )
+                    # Skip recording usage if this is a method definition location
+                    loc_key = (file_id, start_line, start_col)
+                    if loc_key not in method_definitions:
+                        self.db.record_symbol_location(
+                            symbol_id=symbol_id,
+                            file_id=file_id,
+                            start_line=start_line,
+                            start_column=start_col,
+                            end_line=end_line,
+                            end_column=end_col
+                        )
                     
                     # Record scope if this is a container
                     if occurrence.symbol_roles & 0x10:  # Container
                         self.db.record_symbol_scope_location(
                             symbol_id=symbol_id,
                             file_id=file_id,
-                            start_line=start_line + 1,
+                            start_line=start_line,
                             start_column=1,  # Scope starts at beginning of line
-                            end_line=end_line + 1,
-                            end_column=end_col + 1
+                            end_line=end_line,
+                            end_column=end_col
                         )
                     
-                    # Handle method calls
-                    if "#" in occurrence.symbol and (
-                        occurrence.symbol.endswith("().") or 
-                        occurrence.symbol.endswith(".") or 
-                        (occurrence.symbol_roles & 0x8)  # ReadAccess often indicates method call
-                    ):
-                        # Find the target method symbol
-                        target_symbol = occurrence.symbol
-                        if target_symbol in self.symbol_id_map:
-                            target_id = self.symbol_id_map[target_symbol]
-                            self.db.record_ref_call(symbol_id, target_id)
-                            
-                            # Record call location
-                            self.db.record_reference_location(
-                                symbol_id,
-                                file_id,
-                                start_line + 1,
-                                start_col + 1,
-                                end_line + 1,
-                                end_col + 1
-                            )
+                    # Process the occurrence for references and calls
+                    if loc_key not in method_definitions:
+                        self._process_occurrence(occurrence, symbol_id)
+                        
                 except Exception as e:
-                    print(f"Warning: Failed to process occurrence: {str(e)}")
+                    self.logger.error(f"Failed to process occurrence: {str(e)}")
 
     def _normalize_path(self, path: str) -> str:
         """Normalize a symbol path to ensure consistent lookup."""
@@ -432,6 +437,17 @@ class SCIPProcessor:
                     name = name.split("#")[0].strip("`")
                 elif "." in name:
                     name = name.split(".")[0].strip("`")
+        
+        # Handle unnamed symbols - generate a placeholder name
+        if not name:
+            if symbol.symbol.startswith("local "):
+                # For local symbols, use a more descriptive name
+                name = f"local_{len(self.symbol_id_map)}"
+                self.logger.debug(f"Generated name for local symbol: {name}")
+            else:
+                # For other unnamed symbols
+                name = f"unnamed_{len(self.symbol_id_map)}"
+                self.logger.debug(f"Generated placeholder name: {name}")
         
         self.logger.debug(f"Extracted name: {name}")
         self.logger.debug(f"Extracted prefix: {prefix}")
@@ -687,20 +703,43 @@ class SCIPProcessor:
             
         file_id, start_line, start_col, end_line, end_col = loc_info
         roles = occurrence.symbol_roles
+        sym_kind = self.symbol_kind_map.get(occurrence.symbol)
         
-        # Handle container and definition roles - these define enclosing symbols
-        if (roles & 0x10) != 0 or (roles & 0x1) != 0:  # Container or Definition
-            # If this symbol is a method/function, push it as the current caller context
-            if self.symbol_kind_map.get(occurrence.symbol) in self.method_like_kinds:
+        self.logger.debug(
+            f"_process_occurrence: symbol_id={symbol_id}, roles={roles:#x}, "
+            f"kind={sym_kind}, loc=({start_line},{start_col})"
+        )
+
+        # Handle method definitions first
+        if (roles & 0x1) != 0:  # Definition
+            if sym_kind in self.method_like_kinds:
+                # Pop any existing method from this file
+                old_caller = self._get_enclosing_symbol(file_id)
+                if old_caller:
+                    self.logger.debug(f"Popping old caller {old_caller}")
+                    self._pop_enclosing_symbol(file_id)
+                
+                # Push this method as the new active caller
+                self.logger.debug(f"Pushing new method {symbol_id}")
                 self._push_enclosing_symbol(file_id, symbol_id)
+                self._handle_definition(occurrence, symbol_id)
+            return  # Skip further processing for definitions
         
         # Handle read access and potential calls
         if (roles & 0x8) != 0:  # ReadAccess
+            caller_symbol_id = self._get_enclosing_symbol(file_id)
+            
+            # Skip if this is a read of the current method
+            if caller_symbol_id == symbol_id:
+                self.logger.debug(f"Skipping self-reference read: {symbol_id}")
+                return
+                
             if self._is_potential_call(occurrence):
-                # Get the current enclosing symbol (caller)
-                caller_symbol_id = self._get_enclosing_symbol(file_id)
-                if caller_symbol_id and caller_symbol_id != symbol_id:
-                    # Record a call from the caller to this symbol
+                if caller_symbol_id:
+                    self.logger.debug(
+                        f"[CALL] from caller={caller_symbol_id} to callee={symbol_id} "
+                        f"at line {start_line}"
+                    )
                     self.db.record_ref_call(caller_symbol_id, symbol_id)
                     self.db.record_reference_location(
                         caller_symbol_id,
@@ -711,7 +750,7 @@ class SCIPProcessor:
                         end_col
                     )
                 else:
-                    # If we don't have a known caller, fallback to usage
+                    self.logger.debug(f"No caller context for {symbol_id} => recording as usage")
                     self.db.record_ref_usage(symbol_id, symbol_id)
                     self.db.record_reference_location(
                         symbol_id,
@@ -722,7 +761,6 @@ class SCIPProcessor:
                         end_col
                     )
             else:
-                # Treat as usage
                 self.db.record_ref_usage(symbol_id, symbol_id)
                 self.db.record_reference_location(
                     symbol_id,
@@ -734,14 +772,13 @@ class SCIPProcessor:
                 )
         
         # Handle other roles
-        if roles & 0x1:  # Definition
-            self._handle_definition(occurrence, symbol_id)
         if roles & 0x2:  # Import
             self._handle_import(occurrence, symbol_id)
         if roles & 0x4:  # WriteAccess
             self._handle_write_access(occurrence, symbol_id)
         if roles & 0x10:  # Container
-            self._handle_container(occurrence, symbol_id)
+            if sym_kind in self.method_like_kinds:
+                self._handle_container(occurrence, symbol_id)
         if roles & 0x20:  # TypeDefinition
             self._handle_type_usage(occurrence, symbol_id)
 
@@ -767,20 +804,43 @@ class SCIPProcessor:
         Determine if this occurrence likely represents a call.
         We consider an occurrence a call if:
         - symbol_roles includes ReadAccess (0x8)
-        - The symbol is known or appears like a method/function (ends with '()', or is a known function/method symbol)
+        - The symbol is known to be a method/function, AND
+        - The symbol name follows explicit method call patterns
         """
         symbol = occurrence.symbol
         roles = occurrence.symbol_roles
         
-        if (roles & 0x8) != 0:  # ReadAccess
-            # Check if we know this symbol's kind
-            target_kind = self.symbol_kind_map.get(symbol)
+        # Skip if this is also a definition
+        if (roles & 0x1) != 0:
+            self.logger.debug(f"Skipping call detection for definition: {symbol}")
+            return False
+        
+        # Must be a read access
+        if (roles & 0x8) == 0:
+            return False
             
-            # If kind is known and is in method_like_kinds, definitely a call
-            if target_kind in self.method_like_kinds:
-                return True
-                
-            # If we don't know the kind, check the symbol name patterns
+        # Check if we know this symbol's kind
+        target_kind = self.symbol_kind_map.get(symbol)
+        
+        # Must be a method-like symbol
+        if target_kind not in self.method_like_kinds:
+            return False
+            
+        # Look for explicit method call patterns
+        is_call = False
+        if "()" in symbol:  # Has parentheses
             if symbol.endswith("().") or symbol.endswith("()"):
-                return True
-        return False
+                is_call = True
+            elif "#" in symbol and "()" in symbol:  # Class method call
+                is_call = True
+            elif "." in symbol and not (
+                symbol.startswith("local") or 
+                symbol.startswith("unnamed") or
+                symbol.endswith(".")  # Avoid treating simple member access as calls
+            ):
+                is_call = True
+        
+        if is_call:
+            self.logger.debug(f"Detected method call: {symbol}")
+        
+        return is_call
